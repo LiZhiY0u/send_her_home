@@ -17,6 +17,8 @@ void UiPages::Process(UI_PAGE page) {
     case M_LIGHT_BRI: OledUI::Light_Bri_Proc();break;
     case M_LIGHT_COLOR: OledUI::Light_Color_Proc();break;
     case M_LIGHT_EFFECT: OledUI::Light_Effect_Proc();break;
+    case M_MOTOR: MotorProcess();break;
+    case M_MOTOR_SPEED: MotorSpeedProcess();break;
     default:break;
     }
 }

@@ -26,6 +26,7 @@ inline UI_PAGE ParentOf(UI_PAGE page)
     case M_VOLT:
     case M_SETTING:
     case M_LIGHT_MAIN:
+    case M_MOTOR:
         return M_MAIN;
     case M_KNOB:
         return M_EDITOR;
@@ -39,6 +40,8 @@ inline UI_PAGE ParentOf(UI_PAGE page)
     case M_LIGHT_COLOR:
     case M_LIGHT_EFFECT:
         return M_LIGHT_MAIN;
+    case M_MOTOR_SPEED:
+        return M_MOTOR;
     default:
         return page;
     }

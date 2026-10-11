@@ -66,22 +66,27 @@ void UiPages::InitPage(UI_PAGE page)
     case M_LIGHT_BRI:   Light_Bri_Param_Init(); break;
     case M_LIGHT_COLOR: Light_Color_Param_Init(); break;
     case M_LIGHT_EFFECT:Light_Effect_Param_Init(); break;
+    case M_MOTOR: MotorInit(); break;
     default: break;
     }
 }
 
 bool OledUI::NavigateTo(UI_PAGE page)
 {
+    if ((ui.index == M_MOTOR || ui.index == M_MOTOR_SPEED) &&
+        page != M_MOTOR && page != M_MOTOR_SPEED) UiPages::MotorStop();
     return UiNavigation::RequestEnter(ui, page) == UiNavigation::Result::Accepted;
 }
 
 bool OledUI::Back()
 {
+    if (ui.index == M_MOTOR) UiPages::MotorStop();
     return UiNavigation::RequestBack(ui) == UiNavigation::Result::Accepted;
 }
 
 void OledUI::OpenRoot(UI_PAGE page)
 {
+    UiPages::MotorStop();
     UiNavigation::OpenRoot(ui, page, UiPages::InitPage);
 }
 

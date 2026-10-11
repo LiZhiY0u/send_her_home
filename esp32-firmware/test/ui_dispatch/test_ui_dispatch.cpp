@@ -12,6 +12,10 @@ void SendBuffer(){calls.push_back(101);} void ClearBuffer(){calls.push_back(102)
 void Init(){} void SetContrast(uint8_t){}
 }
 namespace ConnectionToast { void Draw(){calls.push_back(103);} }
+namespace UiPages {
+void MotorProcess(){calls.push_back(15);}
+void MotorSpeedProcess(){calls.push_back(16);}
+}
 namespace OledUI {
 void Key_Scan(){calls.push_back(100);}
 void Fade(){calls.push_back(200);} void Window_Param_Init(){calls.push_back(201);}
@@ -25,7 +29,7 @@ PAGE(Setting_Proc,8) PAGE(AnimationCurve_Proc,9) PAGE(About_Proc,10)
 PAGE(Light_Main_Proc,11) PAGE(Light_Bri_Proc,12) PAGE(Light_Color_Proc,13) PAGE(Light_Effect_Proc,14)
 }
 int main() {
-    for(int page=0;page<15;++page) {
+    for(int page=0;page<17;++page) {
         calls.clear();UiPages::Process(static_cast<UI_PAGE>(page));assert(calls==std::vector<int>{page});
         calls.clear();ui.state=S_NONE;ui.index=static_cast<uint8_t>(page);OledUI::Task();
         assert(calls==std::vector<int>({100,101,102,page,103}));

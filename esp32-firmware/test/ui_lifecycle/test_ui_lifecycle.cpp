@@ -2,6 +2,9 @@
 #include "OledUI/UiContext.h"
 #include "Input/InputQueue.h"
 #include "Bluetooth/ConnectionEvents.h"
+#include "DRV8837.h"
+#include "OledUI/UiPages/UiPages.h"
+Motor motor;
 uint32_t test_now=0;SerialFake Serial;
 U8G2_SH1106_128X64_NONAME_F_HW_I2C u8g2;
 namespace { uint8_t buffer[1024]={}; }
@@ -37,4 +40,22 @@ int main() {
     *selection=3;
     OledUI::OpenRoot(M_MAIN);OledUI::OpenRoot(M_LIGHT_COLOR);
     assert(check_box.s==selection && *selection==3);
+    OledUI::OpenRoot(M_MAIN);
+    assert(main_menu_count == 5 && main_icon_count == 5);
+    assert(OledUI::NavigateTo(M_MOTOR)); OledUI::Layer_Init_In();
+    ui.state = S_NONE; ui.init = true;
+    ui.select[ui.layer] = 1; btn.id = BTN_ID_SP; btn.pressed = true;
+    UiPages::MotorProcess(); assert(motor.duty == 76);
+    ui.select[ui.layer] = 2; btn.pressed = true;
+    UiPages::MotorProcess(); assert(motor.duty == 76);
+    assert(OledUI::NavigateTo(M_MOTOR_SPEED)); OledUI::Layer_Init_In();
+    btn.id = BTN_ID_CW; btn.pressed = true;
+    UiPages::MotorSpeedProcess(); assert(motor.duty == 89);
+    btn.id = BTN_ID_SP; btn.pressed = true;
+    UiPages::MotorSpeedProcess(); OledUI::Layer_Init_Out();
+    assert(ui.index == M_MOTOR && motor.duty == 89);
+    assert(OledUI::Back()); assert(motor.duty == 0);
+    OledUI::Layer_Init_Out();
+    assert(OledUI::NavigateTo(M_MOTOR)); OledUI::Layer_Init_In();
+    assert(motor.duty == 0);
 }

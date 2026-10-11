@@ -22,6 +22,8 @@ enum UI_PAGE
     M_LIGHT_BRI,
     M_LIGHT_COLOR,
     M_LIGHT_EFFECT,
+    M_MOTOR,
+    M_MOTOR_SPEED,
 };
 
 enum UI_STATE
