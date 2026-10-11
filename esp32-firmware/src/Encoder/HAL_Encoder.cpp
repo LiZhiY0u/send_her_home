@@ -1,8 +1,10 @@
 #include "Encoder/ButtonEvent.h"
 #include "Encoder/HAL_Encoder.h"
 #include "Input/InputQueue.h"
+#include "Encoder/StartupReleaseGuard.h"
 
 static ButtonEvent EncoderPush(3000);
+static StartupReleaseGuard EncoderStartupRelease;
 
 static bool EncoderEnable = true;        // encoder使能
 static volatile int16_t EncoderDiff = 0; // encoder脉冲，用一次就清零
@@ -98,11 +100,14 @@ void ENCODER::Encoder_Init()
     Serial.printf("encoder init succ!!!");
 
     EncoderPush.EventAttach(Encoder_PushHandler);
+    EncoderStartupRelease = StartupReleaseGuard{};
 }
 
 void ENCODER::Encoder_Update()
 {
-    EncoderPush.EventMonitor(Encoder_GetIsPush());
+    const bool pressed = Encoder_GetIsPush();
+    if (EncoderStartupRelease.Accept(pressed, millis()))
+        EncoderPush.EventMonitor(pressed);
 }
 
 int16_t ENCODER::Encoder_GetDiff()
