@@ -25,6 +25,9 @@ foreach ($testFile in $testFiles) {
         $compileArguments += Join-Path $projectRoot 'src/Bluetooth/BluetoothService.cpp'
     }
     $compileArguments += @('-o', $executable)
+    if ($testName -eq 'drv8837') {
+        $compileArguments = @('-I', (Join-Path $projectRoot 'test/support/motor')) + $compileArguments
+    }
     if ($testName -eq 'startup_release') {
         $compileArguments = @('-DARDUINO', '-I', (Join-Path $projectRoot 'test/support/oled')) + $compileArguments + (Join-Path $projectRoot 'src/Encoder/ButtonEvent.cpp')
     }

@@ -5,13 +5,13 @@
 #include "Encoder/HAL_Encoder.h"
 #include "OledUI/OledUI.h"
 #include "RGB.h"
-#include "TB6612.h"
+#include "DRV8837.h"
 static_assert(configTICK_RATE_HZ == 1000, "Task migration requires original 1ms RTOS tick");
 // Existing RGB implementation references this statically owned object.
 Adafruit_NeoPixel RGB3(BoardConfig::RgbCount, BoardConfig::RgbPin, NEO_GRB + NEO_KHZ800);
-// Preserve the original constructor's GPIO/PWM setup; no motor task is enabled.
-Motor motor(BoardConfig::MotorIn1, BoardConfig::MotorIn2, BoardConfig::MotorPwm,
-            BoardConfig::MotorFrequency, BoardConfig::MotorChannel);
+// Constructor has no hardware side effects; initialize to coast on startup.
+Motor motor(BoardConfig::MotorIn1, BoardConfig::MotorIn2,
+            BoardConfig::MotorFrequency, BoardConfig::MotorChannel1, BoardConfig::MotorChannel2);
 namespace {
 TaskHandle_t handles[4] = {};
 enum class State { NotStarted, Failed, Ready };
@@ -36,6 +36,7 @@ bool AppTasks::Start()
 {
     if (state != State::NotStarted) return state == State::Ready;
     state = State::Failed;
+    motor.begin();
     const TaskFunction_t functions[] = {Sampling, Lighting, Encoder, Display};
     const TaskConfig::Specification specifications[] = {
         TaskConfig::Sampling, TaskConfig::Lighting, TaskConfig::Encoder, TaskConfig::Display};

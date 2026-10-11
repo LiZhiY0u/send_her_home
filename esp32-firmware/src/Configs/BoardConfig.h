@@ -9,6 +9,6 @@
 #define CONFIG_POWER_EN_PIN 26
 namespace BoardConfig {
 constexpr int RgbPin = 19, RgbCount = 10;
-constexpr int MotorIn1 = 16, MotorIn2 = 4, MotorPwm = 17;
-constexpr int MotorFrequency = 1000, MotorChannel = 1;
+constexpr int MotorIn1 = 4, MotorIn2 = 16;
+constexpr int MotorFrequency = 1000, MotorChannel1 = 1, MotorChannel2 = 2;
 }
