@@ -1,6 +1,8 @@
 {
   "pages": [
-    "pages/remote/remote"
+    "pages/remote/remote",
+    "pages/lighting/lighting",
+    "pages/paint/paint"
   ],
   "window": {
     "navigationBarTitleText": "展示柜遥控器",

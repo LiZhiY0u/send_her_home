@@ -1,0 +1,15 @@
+<view class="page">
+  <view class="eyebrow">FIGURECASE / PIXEL PAINT</view>
+  <view class="title">把心意画成光</view>
+  <view class="subtitle">底面133灯 · GPIO17 · 软边缘补光</view>
+  <view class="status">{{status}}</view>
+  <view class="board"><canvas type="2d" id="paint-board" class="canvas" catchtouchstart="touchStart" catchtouchmove="touchMove" bindtouchend="touchEnd" bindtouchcancel="touchEnd"></canvas><view wx:if="{{error}}">{{error}}</view></view>
+  <view class="tip">直接用手指画画 · 显示的是实际灯点采样<view>空隙处没有灯珠，不能连续发光</view></view>
+  <view class="tools"><button class="{{eraser ? 'active' : ''}}" bindtap="toggleEraser">{{eraser ? '橡皮擦' : '画笔'}}</button><button bindtap="clearBoard">清空画布</button></view>
+  <view class="colors"><button wx:for="{{colors}}" wx:key="*this" class="swatch {{color === item ? 'chosen' : ''}}" style="background:{{item}}" data-color="{{item}}" bindtap="chooseColor"></button></view>
+  <view class="range"><text>画笔直径</text><text>{{diameter}}mm</text></view>
+  <slider min="10" max="60" step="2" value="{{diameter}}" activeColor="#57d9ff" block-size="18" bindchanging="setWidth" bindchange="setWidth" />
+  <button class="sync" loading="{{busy}}" disabled="{{busy}}" bindtap="synchronize">连接并同步绘画</button>
+  <button class="auto" disabled="{{busy}}" bindtap="restoreAuto">恢复自动灯效</button>
+  <view class="tip">退出或断连保留最后完整画面 · 重进需手动同步<view>设备亮度上限约10% · 草稿只保留在本次小程序内</view></view>
+</view>

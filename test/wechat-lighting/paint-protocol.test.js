@@ -1,0 +1,11 @@
+const {test}=require('node:test'),assert=require('node:assert/strict')
+const p=require('../../wechat-mini-program/painting/protocol')
+test('20-byte packet framing covers exactly 399 RGB bytes and CRC known vector',()=>{
+  assert.equal(p.crc(Buffer.from('123456789')),0x29b1)
+  const frame=Uint8Array.from({length:399},(_,i)=>i%256)
+  const packets=p.framePackets(frame,7,258)
+  assert.equal(packets.length,36);assert(packets.every(x=>x.length<=20))
+  assert.equal(packets[1][4],2);assert.equal(packets[1][5],1)
+  assert.deepEqual(Uint8Array.from(packets.slice(1,-1).flatMap(x=>[...x.slice(8)])),frame)
+  const crc=p.crc(frame);assert.deepEqual([...packets.at(-1).slice(8)],[crc&255,crc>>>8])
+})

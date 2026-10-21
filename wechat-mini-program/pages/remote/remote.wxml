@@ -57,6 +57,8 @@
     </view>
   </view>
 
+  <navigator url="/pages/lighting/lighting" style="margin-top:24rpx;padding:24rpx;text-align:center;color:#2563eb;background:#fff;border-radius:20rpx;">灯阵实验室 · 3D 离线预览 →</navigator>
+  <navigator url="/pages/paint/paint" style="margin-top:16rpx;padding:24rpx;text-align:center;color:#2563eb;background:#fff;border-radius:20rpx;">底面灯板 · 实时绘画 →</navigator>
   <view class="hint">
     <view class="hint-dot {{connected ? 'online' : ''}}"></view>
     <text>{{connected ? '连接正常，可以控制设备' : '开启手机蓝牙后连接设备'}}</text>

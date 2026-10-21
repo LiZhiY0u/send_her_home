@@ -1,0 +1,24 @@
+<view class="lab">
+  <view class="intro"><view class="eyebrow">FIGURECASE / LIGHT LAB</view><view class="heading">让灯光围绕你的收藏</view><view class="offline"><text class="dot"></text>离线预览 · 不控制设备</view></view>
+  <view class="stage">
+    <view class="stage-top"><text>DUAL ARRAY</text><text>133 × 2 / 266 LEDs</text></view>
+    <canvas type="webgl" id="light-scene" class="canvas" catchtouchstart="touchStart" catchtouchmove="touchMove" bindtouchend="touchEnd" bindtouchcancel="touchEnd" bindtap="tapScene"></canvas>
+    <view class="error" wx:if="{{error}}"><text>{{error}}</text><navigator open-type="navigateBack" class="back-link">返回遥控器</navigator></view>
+    <view class="stage-bottom"><text>单指旋转 · 双指缩放</text><text>3D PREVIEW</text></view>
+  </view>
+  <view class="view-tools"><button size="mini" data-view="overall" bindtap="setView">整体</button><button size="mini" data-view="top" bindtap="setView">俯视</button><button size="mini" data-view="reset" bindtap="setView">复位</button><button size="mini" class="play" bindtap="togglePlayback">{{playing ? '暂停预览' : '播放预览'}}</button></view>
+  <navigator url="/pages/paint/paint" style="padding:24rpx;text-align:center;color:#80e7fb;background:#153445;border-radius:18rpx;margin-bottom:24rpx;">放大底面 · 软画笔绘画 →</navigator>
+  <view class="panel">
+    <view class="section-label">01 <text>选择灯层</text></view>
+    <view class="choices"><button wx:for="{{layers}}" wx:key="value" class="chip {{layer === item.value ? 'active' : ''}}" data-field="layer" data-value="{{item.value}}" bindtap="choose">{{item.label}}</button></view>
+    <view class="section-label">02 <text>选择区域</text></view>
+    <view class="choices regions"><button wx:for="{{regions}}" wx:key="value" class="chip {{region === item.value ? 'active' : ''}}" data-field="region" data-value="{{item.value}}" bindtap="choose">{{item.label}}</button></view>
+    <view class="section-label">03 <text>灯光效果</text></view>
+    <view class="choices"><button wx:for="{{effects}}" wx:key="value" class="chip {{effect === item.value ? 'active' : ''}}" data-field="effect" data-value="{{item.value}}" bindtap="choose">{{item.label}}</button></view>
+    <view class="color-row"><button wx:for="{{colors}}" wx:key="*this" class="swatch {{color === item ? 'chosen' : ''}}" style="background:{{item}}" data-field="color" data-value="{{item}}" bindtap="choose"></button></view>
+    <view class="range-label"><text>亮度</text><text>{{brightness}}%</text></view><slider min="0" max="100" value="{{brightness}}" activeColor="#57d9ff" backgroundColor="#253649" block-color="#dff8ff" block-size="18" data-field="brightness" bindchanging="slider" bindchange="slider" />
+    <view class="range-label"><text>速度</text><text>{{speed}}%</text></view><slider min="0" max="100" value="{{speed}}" activeColor="#57d9ff" backgroundColor="#253649" block-color="#dff8ff" block-size="18" data-field="speed" bindchanging="slider" bindchange="slider" />
+    <view class="linked"><text>上下联动</text><view class="choices"><button class="chip {{linkedMode === 'sync' ? 'active' : ''}}" data-field="linkedMode" data-value="sync" bindtap="choose">同步</button><button class="chip {{linkedMode === 'reverse' ? 'active' : ''}}" data-field="linkedMode" data-value="reverse" bindtap="choose">反向</button></view></view>
+  </view>
+  <view class="notes">200 × 200 × 300mm 为示意尺寸 · 顶部安装朝向待校准<view>灯点与光晕仅表达效果，不模拟真实照度与反射。</view></view>
+</view>

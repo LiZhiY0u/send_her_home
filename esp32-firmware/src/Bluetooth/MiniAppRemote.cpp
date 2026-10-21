@@ -9,6 +9,7 @@
 #include "Configs/BluetoothConfig.h"
 #include "Input/InputQueue.h"
 #include "Input/InputAdapters.h"
+#include "Lighting/PaintBridge.h"
 
 namespace
 {
@@ -31,6 +32,7 @@ void OnAttEvent(uint8_t packet_type, uint16_t channel, uint8_t *packet, uint16_t
                                gap_get_role(handle) == HCI_ROLE_SLAVE))
         {
             ConnectionEvents::Push(ConnectionEvents::Event::MiniAppConnected);
+            PaintBridge::Connect(handle);
         }
         break;
     }
@@ -38,8 +40,12 @@ void OnAttEvent(uint8_t packet_type, uint16_t channel, uint8_t *packet, uint16_t
         if (connection.Disconnect(att_event_disconnected_get_handle(packet)))
         {
             ConnectionEvents::Push(ConnectionEvents::Event::MiniAppDisconnected);
+            PaintBridge::Disconnect(att_event_disconnected_get_handle(packet));
             gap_advertisements_enable(1);
         }
+        break;
+    case ATT_EVENT_CAN_SEND_NOW:
+        PaintBridge::CanSend();
         break;
     default:
         break;
@@ -54,8 +60,8 @@ int OnWrite(
     uint8_t *buffer,
     uint16_t buffer_size)
 {
-    (void)connection_handle;
-    (void)transaction_mode;
+    if(attribute_handle!=kBleRemoteWriteValueHandle)
+        return PaintBridge::Write(connection_handle,attribute_handle,transaction_mode,offset,buffer,buffer_size);
 
     if (attribute_handle != kBleRemoteWriteValueHandle ||
         offset != 0 ||
@@ -73,7 +79,8 @@ int OnWrite(
 
 void MiniAppRemote::Init()
 {
-    att_server_init(kBleRemoteProfileData, NULL, OnWrite);
+    if(!PaintBridge::Init())Serial.println("Paint service memory unavailable");
+    att_server_init(kBleRemoteProfileData, PaintBridge::ReadStatus, OnWrite);
     att_server_register_packet_handler(OnAttEvent);
 
     bd_addr_t null_address = {0, 0, 0, 0, 0, 0};

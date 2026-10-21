@@ -1,0 +1,7 @@
+{
+  "name": "figure-case-remote",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": { "test": "node --test ../test/wechat-lighting/*.test.js" },
+  "dependencies": { "threejs-miniprogram": "0.0.8" }
+}
