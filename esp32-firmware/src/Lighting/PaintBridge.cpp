@@ -9,7 +9,7 @@
 namespace {
 PaintProtocol::Receiver receiver;
 QueueHandle_t commands=nullptr,acks=nullptr;
-struct Ack {uint8_t session;uint16_t sequence;bool automatic;};
+struct Ack {uint8_t session;uint16_t sequence;bool automatic;bool effect;};
 uint16_t phone=0xffff;bool subscribed=false,notifyPending=false,paintMode=false;
 uint8_t status[16]={0xa7,1,0,0,0,0,0,0};
 btstack_timer_source_t timer;
@@ -23,8 +23,8 @@ void Status(uint8_t code,uint8_t op,uint8_t session,uint16_t sequence) {
 void Tick(btstack_timer_source_t*) {
     Ack ack;
     if(acks&&xQueueReceive(acks,&ack,0)==pdTRUE) {
-        paintMode=!ack.automatic;
-        if(ack.session==receiver.Session()) Status(0,ack.automatic?5:4,ack.session,ack.sequence);
+        paintMode=!ack.automatic&&!ack.effect;
+        if(ack.session==receiver.Session()) Status(0,ack.effect?6:(ack.automatic?5:4),ack.session,ack.sequence);
     }
     if(notifyPending&&subscribed&&phone!=0xffff)att_server_request_can_send_now_event(phone);
     btstack_run_loop_set_timer(&timer,30);btstack_run_loop_add_timer(&timer);
@@ -59,9 +59,11 @@ int PaintBridge::Write(uint16_t handle,uint16_t attribute,uint16_t transaction,u
     const uint16_t sequence=size>=6?static_cast<uint16_t>(data[4]|(data[5]<<8)):0;
     if(code) {Status(code,op,receiver.Session(),sequence);return 0;}
     if(op==1) {xQueueReset(commands);Status(0,op,receiver.Session(),0);}
-    if(receiver.Ready()||receiver.AutoRequested()) {
+    if(receiver.Ready()||receiver.AutoRequested()||receiver.EffectRequested()) {
         Command command{};command.session=receiver.Session();command.sequence=receiver.Sequence();command.automatic=receiver.AutoRequested();
-        if(!command.automatic)std::memcpy(command.pixels,receiver.Pixels(),399);
+        command.effect=receiver.EffectRequested();
+        if(command.effect)std::memcpy(command.settings,receiver.EffectSettings(),6);
+        else if(!command.automatic)std::memcpy(command.pixels,receiver.Pixels(),399);
         if(xQueueSend(commands,&command,0)!=pdTRUE)Status(3,op,command.session,command.sequence);
         receiver.ClearReady();
     }
@@ -78,5 +80,5 @@ void PaintBridge::CanSend() {
 }
 bool PaintBridge::Read(Command& command) {return commands&&xQueueReceive(commands,&command,0)==pdTRUE;}
 void PaintBridge::Applied(const Command& command) {
-    if(acks){const Ack ack={command.session,command.sequence,command.automatic};xQueueOverwrite(acks,&ack);}
+    if(acks){const Ack ack={command.session,command.sequence,command.automatic,command.effect};xQueueOverwrite(acks,&ack);}
 }

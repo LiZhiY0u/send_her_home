@@ -31,3 +31,36 @@ slider { margin:22rpx 0 32rpx; }
 .notes { color:#688397; font-size:19rpx; line-height:1.9; text-align:center; margin-top:26rpx; }
 .paint-entry {padding:24rpx;text-align:center;color:#7860be;background:#eeebf8;border-radius:24rpx;margin-bottom:24rpx;font-size:25rpx}
 .swatch.chosen {outline-color:#8b70df}
+.device-control{padding:12px;margin-bottom:12px;background:#eeebf8;border-radius:14px;font-size:11px;color:#83758e;line-height:1.7}.device-control button{background:#7560dd;color:#fff;font-size:13px;line-height:38px;margin-bottom:8px;border-radius:12px}
+
+/* The page owns the viewport; only the controls pane scrolls. Use px here
+   because rpx grows with screen width when a phone rotates to landscape. */
+.lab{height:100vh;box-sizing:border-box;display:flex;flex-direction:column;gap:12px;padding:12px 14px calc(8px + env(safe-area-inset-bottom));overflow:hidden}
+.preview-pane{flex:0 0 49%;min-height:0;display:flex;flex-direction:column}
+.intro{flex-shrink:0}.eyebrow{display:none}.heading{font-size:20px;margin:0 0 5px}.offline{font-size:11px;gap:6px}.dot{width:5px;height:5px}
+.stage{flex:1;min-height:0;margin-top:10px;border-radius:18px;display:flex;flex-direction:column;background:#20242d}
+.stage-top,.stage-bottom{padding:8px 12px;font-size:9px;flex-shrink:0;letter-spacing:.5px}
+.canvas{width:100%;height:0;flex:1;min-height:0}
+.view-tools{flex-shrink:0;gap:6px;margin:8px 0 0}.view-tools button{font-size:11px;padding:0 12px;line-height:32px;border-radius:12px}
+.controls-scroll{flex:1;height:0;min-height:0;width:100%;border-top:1px solid #e9e5ef}
+.controls-content{padding:12px 0 8px}.paint-entry{font-size:12px;padding:12px;margin-bottom:12px;border-radius:12px}
+.panel{padding:16px;border-radius:18px}.section-label{font-size:11px;margin-bottom:10px}.section-label text{font-size:13px;margin-left:8px}
+.choices{gap:7px;margin-bottom:18px}.chip,.regions .chip{font-size:12px;line-height:34px;padding:0 12px;border-radius:12px}
+.color-row{padding:0 4px 20px}.swatch{width:27px;height:27px}.range-label,.linked{font-size:12px}.linked{gap:10px}
+.notes{font-size:10px;margin-top:14px}.error{font-size:12px;padding:12px}
+@media (orientation:landscape){
+  .lab{flex-direction:row;gap:16px;padding:10px calc(12px + env(safe-area-inset-right)) calc(8px + env(safe-area-inset-bottom)) calc(12px + env(safe-area-inset-left))}
+  .preview-pane{flex:3;width:0;height:100%;position:relative;overflow:hidden;border-radius:18px;background:#20242d}
+  .preview-pane .intro{position:absolute;top:12px;left:16px;z-index:2;pointer-events:none}
+  .preview-pane .heading{color:#e8edf5;font-size:15px}
+  .preview-pane .offline{color:#b9c3d2;font-size:10px}
+  .preview-pane .stage{position:absolute;inset:0;margin:0;border:0;border-radius:18px}
+  .preview-pane .stage-top{display:none}
+  .preview-pane .stage-bottom{position:absolute;bottom:54px;left:0;right:0;color:#b9c3d2;pointer-events:none}
+  .preview-pane .canvas{flex:none;position:absolute;inset:0;width:100%;height:100%}
+  .preview-pane .view-tools{position:absolute;bottom:10px;left:12px;right:12px;z-index:2;margin:0}
+  .preview-pane .view-tools button{background:#3b4250;color:#eef1f8}
+  .preview-pane .view-tools .play{background:#7560dd;color:#fff}
+  .controls-scroll{flex:2;width:0;height:100%;border-top:0;border-left:1px solid #e9e5ef}
+  .controls-content{padding:0 0 12px 12px}.heading{font-size:18px}.stage-top,.stage-bottom{padding:6px 10px}
+}

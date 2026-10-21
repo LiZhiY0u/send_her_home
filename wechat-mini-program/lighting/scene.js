@@ -6,7 +6,7 @@ const physicalIndex = new Map(physical.points.map((p,i)=>[`${p.x.toFixed(4)},${p
 function createScene(canvas, THREE, points, options) {
   const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: false })
   const scene = new THREE.Scene()
-  const camera = new THREE.PerspectiveCamera(42, 1, 1, 3000)
+  const camera = new THREE.PerspectiveCamera(36, 1, 1, 3000)
   const gestures = createGestures()
   const geometries = new Set(), materials = new Set()
   let disposed = false
@@ -16,18 +16,18 @@ function createScene(canvas, THREE, points, options) {
   const ratio = Math.max(1, Math.min(2, Number.isFinite(options.pixelRatio) ? options.pixelRatio : 1))
   try {
     renderer.setPixelRatio(ratio)
-    renderer.setClearColor(0x08121f, 1)
+    renderer.setClearColor(0x20242d, 1)
     const boxGeometry = ownGeometry(new THREE.BoxBufferGeometry(200, 300, 200))
     const glass = new THREE.Mesh(boxGeometry, ownMaterial(new THREE.MeshBasicMaterial({
-      color: 0x5f9fb5, transparent: true, opacity: 0.035, depthWrite: false, side: THREE.DoubleSide
+      color: 0xa0b1c6, transparent: true, opacity: 0.035, depthWrite: false, side: THREE.DoubleSide
     })))
     scene.add(glass)
     scene.add(new THREE.LineSegments(ownGeometry(new THREE.EdgesGeometry(boxGeometry)),
-      ownMaterial(new THREE.LineBasicMaterial({ color: 0x3b6579, transparent: true, opacity: 0.65 }))))
+      ownMaterial(new THREE.LineBasicMaterial({ color: 0x9caec6, transparent: true, opacity: 0.8 }))))
     const pedestal = new THREE.Mesh(ownGeometry(new THREE.CylinderBufferGeometry(43, 48, 10, 32)),
-      ownMaterial(new THREE.MeshBasicMaterial({ color: 0x223b50 })))
+      ownMaterial(new THREE.MeshBasicMaterial({ color: 0x536174 })))
     pedestal.position.y = -140; scene.add(pedestal)
-    const figureMaterial = ownMaterial(new THREE.MeshBasicMaterial({ color: 0x446278, wireframe: true, transparent: true, opacity: 0.4 }))
+    const figureMaterial = ownMaterial(new THREE.MeshBasicMaterial({ color: 0x9ba7b9, wireframe: true, transparent: true, opacity: 0.5 }))
     const body = new THREE.Mesh(ownGeometry(new THREE.CylinderBufferGeometry(17, 27, 100, 12)), figureMaterial)
     body.position.y = -80; scene.add(body)
     const head = new THREE.Mesh(ownGeometry(new THREE.SphereBufferGeometry(20, 12, 8)), figureMaterial)
@@ -59,7 +59,7 @@ function createScene(canvas, THREE, points, options) {
             const index=physicalIndex.get(`${p.x.toFixed(4)},${(-p.z).toFixed(4)}`)
             rgb=index===undefined?[0,0,0]:[0,1,2].map(c=>settings.paintFrame[index*3+c]/255)
           }
-          const base = selected(p, settings) ? 0.045 : 0.012
+          const base = selected(p, settings) ? 0.003 : 0.001
           colors.set(rgb.map(v => Math.max(v, base)), i * 3)
         })
         geometry.attributes.color.needsUpdate = true

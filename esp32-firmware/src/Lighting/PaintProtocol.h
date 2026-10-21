@@ -18,6 +18,12 @@ public:
             Disconnect(); session_=p[3]; return 0;
         }
         if(session_==0||p[3]!=session_) return 2;
+        if(p[2]==6) {
+            if(n!=14||p[6]||p[7]||p[8]>=22||p[9]>100||p[10]>100) return 1;
+            if(haveSequence_&&static_cast<int16_t>(seq-sequence_)<=0) return 2;
+            sequence_=seq;haveSequence_=true;active_=ready_=auto_=false;effect_=true;
+            std::memcpy(effectSettings_,p+8,6);return 0;
+        }
         if(p[2]==5) { if(n!=8) return 1; active_=false;ready_=false;auto_=true;sequence_=seq;return 0; }
         if(p[2]==2) {
             if(n!=8||ready_) return 3;
@@ -48,10 +54,13 @@ public:
     uint8_t Session() const { return session_; }
     uint16_t Sequence() const { return sequence_; }
     bool AutoRequested() const { return auto_; }
-    void ClearReady() { ready_=false;auto_=false; }
-    void Disconnect() {active_=ready_=auto_=haveSequence_=false;session_=0;}
+    bool EffectRequested() const {return effect_;}
+    const uint8_t* EffectSettings() const {return effectSettings_;}
+    void ClearReady() { ready_=false;auto_=false;effect_=false; }
+    void Disconnect() {active_=ready_=auto_=effect_=haveSequence_=false;session_=0;}
 private:
     uint8_t pixels_[399]={},session_=0;
+    uint8_t effectSettings_[6]={};bool effect_=false;
     bool seen_[133]={},active_=false,ready_=false,auto_=false,haveSequence_=false;
     uint16_t sequence_=0;uint32_t stamp_=0;
 };

@@ -1,8 +1,15 @@
 const { test } = require('node:test')
 const assert = require('node:assert/strict')
 const { EFFECTS, LINK_MODES, sampleEffect } = require('../../wechat-mini-program/lighting/effects')
-test('effect library provides twelve spatial presets plus existing effects', () => {
-  assert.equal(EFFECTS.length, 14)
+test('waves extinguish troughs and keep narrow bright peaks',()=>{
+ const settings={effect:'waveX',color:'#ffffff',brightness:100,speed:50}
+ const sample=x=>sampleEffect({x,z:0,layer:'bottom',region:'CENTER'},settings,0)[0]
+ assert(sample(-Math.PI/2/.045)<.001)
+ assert(Math.abs(sample(Math.PI/2/.045)-1)<.00001)
+ assert(sample(0)<.1)
+})
+test('effect library provides twenty two effects with bounded animated output', () => {
+  assert.equal(EFFECTS.length, 22)
   assert.equal(LINK_MODES.length, 4)
   for (const { value } of EFFECTS) {
     const samples = [0, .37, 1.2, 3.8].flatMap(t => [-80, 0, 40, 90].map(x =>

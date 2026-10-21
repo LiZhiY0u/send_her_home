@@ -69,6 +69,22 @@ function createPaintSender(connection,onState,options={}) {
       pending=Uint8Array.from(frame);onState('本地已更新，等待设备确认');drain()
     },
     stop(){active=false;pending=null;token++;cancelWait(new Error('传输已取消'));if(off){off();off=null}},
+    async applyEffect(settings){
+      const { EFFECTS }=require('../lighting/effects')
+      const id=EFFECTS.findIndex(item=>item.value===settings.effect)
+      if(id<0||!/^#[0-9a-f]{6}$/i.test(settings.color))throw new Error('灯效参数错误')
+      const percent=v=>Math.max(0,Math.min(100,Math.round(Number(v)||0)))
+      const color=settings.color.slice(1)
+      const payload=[id,percent(settings.speed),percent(settings.brightness),... [0,2,4].map(i=>parseInt(color.slice(i,i+2),16))]
+      api.stop();if(running)await running
+      const t=token;lastError=null;listen()
+      try{
+        await handshake(t);check(t)
+        const seq=++sequence,ack=wait(6,seq,t)
+        await connection.write(P.WRITE,P.packet(6,session,seq,0,0,payload));await ack;check(t)
+        onState('底面灯效已应用')
+      }finally{if(t===token)api.stop()}
+    },
     async restoreAuto(){
       api.stop();if(running)await running
       const t=token;lastError=null;listen()

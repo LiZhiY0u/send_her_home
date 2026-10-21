@@ -1,5 +1,6 @@
 <view class="lab">
-  <view class="intro"><view class="eyebrow">LIGHT STUDIO</view><view class="heading">为收藏，创造氛围</view><view class="offline"><text class="dot"></text>离线预览 · 不控制设备</view></view>
+  <view class="preview-pane">
+  <view class="intro"><view class="eyebrow">LIGHT STUDIO</view><view class="heading">为收藏，创造氛围</view><view class="offline"><text class="dot"></text>{{deviceLinked ? '底面灯效联动已开启' : '本地预览 · 点击应用以控制底面'}}</view></view>
   <view class="stage">
     <view class="stage-top"><text>DUAL ARRAY</text><text>133 × 2 / 266 LEDs</text></view>
     <canvas type="webgl" id="light-scene" class="canvas" catchtouchstart="touchStart" catchtouchmove="touchMove" bindtouchend="touchEnd" bindtouchcancel="touchEnd" bindtap="tapScene"></canvas>
@@ -7,6 +8,10 @@
     <view class="stage-bottom"><text>单指旋转 · 双指缩放</text><text>3D PREVIEW</text></view>
   </view>
   <view class="view-tools"><button size="mini" data-view="overall" bindtap="setView">整体</button><button size="mini" data-view="top" bindtap="setView">俯视</button><button size="mini" data-view="reset" bindtap="setView">复位</button><button size="mini" class="play" bindtap="togglePlayback">{{playing ? '暂停预览' : '播放预览'}}</button></view>
+  </view>
+  <scroll-view class="controls-scroll" scroll-y enhanced show-scrollbar="{{false}}">
+  <view class="controls-content">
+  <view class="device-control"><button loading="{{deviceBusy}}" disabled="{{deviceBusy}}" bindtap="applyDeviceEffect">应用到底面灯板</button><view>{{deviceStatus}}</view><view>仅发送灯效、颜色、速度和亮度；区域与上下联动仍仅预览。实物亮度受约10%上限保护。</view></view>
   <navigator url="/pages/paint/paint" class="paint-entry">在底面上作画 ↗</navigator>
   <view class="panel">
     <view class="section-label">01 <text>选择灯层</text></view>
@@ -21,4 +26,6 @@
     <view class="linked"><text>上下联动</text><view class="choices"><button wx:for="{{linkModes}}" wx:key="value" class="chip {{linkedMode === item.value ? 'active' : ''}}" data-field="linkedMode" data-value="{{item.value}}" bindtap="choose">{{item.label}}</button></view></view>
   </view>
   <view class="notes">200 × 200 × 300mm 为示意尺寸 · 顶部安装朝向待校准<view>灯点与光晕仅表达效果，不模拟真实照度与反射。</view></view>
+  </view>
+  </scroll-view>
 </view>

@@ -23,6 +23,18 @@ function statusFor(packet,code=0){
   const s=new Uint8Array(16);s.set([0xa7,1,code,1,packet[3],packet[4],packet[5],packet[2]])
   new DataView(s.buffer).setUint32(8,P.hash,true);s[12]=133;return s.buffer
 }
+test('effect sends stable ID and parameters and waits for firmware application ACK',async()=>{
+ let listener,effectPacket;const states=[]
+ const connection={enablePainting:async()=>{},onStatus:f=>{listener=f;return()=>{listener=null}},write:async(uuid,p)=>{
+   if(p[2]===1)listener(statusFor(p));if(p[2]===6)effectPacket=p
+ }}
+ const sender=createPaintSender(connection,s=>states.push(s),{timeout:200})
+ const promise=sender.applyEffect({effect:'squareMove',speed:50,brightness:80,color:'#ff8000'})
+ for(let i=0;i<30&&!effectPacket;++i)await Promise.resolve()
+ assert.deepEqual(Array.from(effectPacket.slice(8)),[7,50,80,255,128,0])
+ assert(!states.includes('底面灯效已应用'));listener(statusFor(effectPacket));await promise
+ assert(states.includes('底面灯效已应用'))
+})
 test('device busy is retried once with a fresh frame sequence',async()=>{
   let listener,commits=0;const states=[]
   const connection={enablePainting:async()=>{},onStatus:f=>{listener=f;return()=>{listener=null}},write:async(uuid,packet)=>{
