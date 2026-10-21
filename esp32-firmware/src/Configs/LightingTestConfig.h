@@ -3,7 +3,7 @@
 #ifndef ENABLE_LED_STRIP_TEST
 #define ENABLE_LED_STRIP_TEST 1
 #endif
-// 1: photo-mapped ripple/line; 0: region and chain mapping verification.
+// 1: 12-effect spatial playlist; 0: region and chain mapping verification.
 #ifndef ENABLE_LED_SPATIAL_TEST
 #define ENABLE_LED_SPATIAL_TEST 1
 #endif

@@ -2,9 +2,10 @@ const { buildLayout } = require('./layout')
 const source = require('./led-map-133')
 const { createPreviewLoop } = require('./preview-loop')
 const { getDraft } = require('../painting/draft')
+const { EFFECTS, LINK_MODES } = require('./effects')
 const choices = {
   layer: ['both', 'top', 'bottom'], region: ['all', 'CENTER', 'corners', 'UR', 'LR', 'LL', 'UL'],
-  effect: ['solid', 'rotate', 'ripple'], linkedMode: ['sync', 'reverse'],
+  effect: EFFECTS.map(item => item.value), linkedMode: LINK_MODES.map(item => item.value),
   color: ['#57d9ff', '#a78bfa', '#ff7096', '#ffc46b', '#e9f4ff', '#66e3a4']
 }
 function createLightingPage(deps) {
@@ -22,7 +23,7 @@ function createLightingPage(deps) {
       layers: [{ value: 'both', label: '上下联动' }, { value: 'top', label: '顶部' }, { value: 'bottom', label: '底部' }],
       regions: [{ value: 'all', label: '全部' }, { value: 'CENTER', label: '中心' }, { value: 'corners', label: '四角' },
         { value: 'UL', label: '左上' }, { value: 'UR', label: '右上' }, { value: 'LL', label: '左下' }, { value: 'LR', label: '右下' }],
-      effects: [{ value: 'solid', label: '常亮' }, { value: 'rotate', label: '旋转光线' }, { value: 'ripple', label: '扩散圆环' }],
+      effects: EFFECTS, linkModes: LINK_MODES,
       colors: choices.color
     },
     onLoad() { this._alive = true; this._visible = false },
@@ -66,6 +67,7 @@ function createLightingPage(deps) {
     choose(event) {
       const { field, value } = event.currentTarget.dataset
       if (!choices[field] || !choices[field].includes(value)) return
+      if(field === 'effect') this._paintFrame = null
       this.setData({ [field]: value }); this.redraw()
     },
     slider(event) {

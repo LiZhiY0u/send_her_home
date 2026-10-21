@@ -1,1 +1,7 @@
-{"navigationBarTitleText":"底面灯板 · 软画笔","navigationBarBackgroundColor":"#08121f","navigationBarTextStyle":"white","backgroundColor":"#08121f","disableScroll":false}
+{
+  "navigationBarTitleText": "以光作画",
+  "navigationBarBackgroundColor": "#f7f8fa",
+  "navigationBarTextStyle": "black",
+  "backgroundColor": "#f7f8fa",
+  "disableScroll": false
+}

@@ -8,8 +8,8 @@
 #include "DRV8837.h"
 #include "Configs/LightingTestConfig.h"
 #include "Diagnostics/LedStripTest.h"
-#include "Diagnostics/SpatialLedTest.h"
 #include "Lighting/PaintBridge.h"
+#include "Lighting/SpatialEffects.h"
 static_assert(configTICK_RATE_HZ == 1000, "Task migration requires original 1ms RTOS tick");
 // Existing RGB implementation references this statically owned object.
 Adafruit_NeoPixel RGB3(BoardConfig::RgbCount, BoardConfig::RgbPin, NEO_GRB + NEO_KHZ800);
@@ -44,9 +44,9 @@ void Lighting(void*) {
         }
         if(painting) {vTaskDelay(pdMS_TO_TICKS(10));continue;}
 #if ENABLE_LED_SPATIAL_TEST
-        SpatialLedTest::Draw(testStrip, step);
-        vTaskDelay(pdMS_TO_TICKS(SpatialLedTest::StepMs));
-        step = (step + 1) % SpatialLedTest::StepCount;
+        SpatialEffects::DrawPlaylist(testStrip, step);
+        vTaskDelay(pdMS_TO_TICKS(SpatialEffects::FrameMs));
+        step = (step + 1) % (12 * SpatialEffects::FramesPerEffect);
 #else
         LedStripTest::Draw(testStrip, step);
         vTaskDelay(pdMS_TO_TICKS(LedStripTest::DelayMs(step)));

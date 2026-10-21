@@ -5,10 +5,10 @@
     "pages/paint/paint"
   ],
   "window": {
-    "navigationBarTitleText": "展示柜遥控器",
-    "navigationBarBackgroundColor": "#111827",
-    "navigationBarTextStyle": "white",
-    "backgroundColor": "#f3f4f6"
+    "navigationBarTitleText": "FigureCase",
+    "navigationBarBackgroundColor": "#f7f8fa",
+    "navigationBarTextStyle": "black",
+    "backgroundColor": "#f7f8fa"
   },
   "style": "v2",
   "sitemapLocation": "sitemap.json"

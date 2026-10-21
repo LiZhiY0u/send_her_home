@@ -1,4 +1,5 @@
 <view class="page">
+  <view class="page-heading"><text class="eyebrow">FIGURECASE</text><view class="hero-title">你的收藏，<text>自带光芒。</text></view><view class="hero-subtitle">为每一份热爱，调一束刚好的光</view></view>
   <view class="status-card">
     <view class="device-summary">
       <view class="device-icon">FC</view>
@@ -21,7 +22,7 @@
   <view class="remote-card">
     <view class="remote-header">
       <view>
-        <view class="remote-title">方向控制</view>
+        <view class="remote-title">设备遥控</view>
         <view class="remote-subtitle">轻触按键控制设备界面</view>
       </view>
       <view class="remote-badge">BLE</view>
@@ -57,8 +58,10 @@
     </view>
   </view>
 
-  <navigator url="/pages/lighting/lighting" style="margin-top:24rpx;padding:24rpx;text-align:center;color:#2563eb;background:#fff;border-radius:20rpx;">灯阵实验室 · 3D 离线预览 →</navigator>
-  <navigator url="/pages/paint/paint" style="margin-top:16rpx;padding:24rpx;text-align:center;color:#2563eb;background:#fff;border-radius:20rpx;">底面灯板 · 实时绘画 →</navigator>
+  <view class="feature-grid">
+    <navigator url="/pages/lighting/lighting" class="feature-card preview-card"><view class="feature-art orbit-art"><view></view><view></view><view></view></view><view class="feature-title">探索灯光 ↗</view><view class="feature-caption">3D 空间 · 离线预览</view></navigator>
+    <navigator url="/pages/paint/paint" class="feature-card paint-card"><view class="feature-art paint-art">✦</view><view class="feature-title">以光作画 ↗</view><view class="feature-caption">软笔绘画 · 实时同步</view></navigator>
+  </view>
   <view class="hint">
     <view class="hint-dot {{connected ? 'online' : ''}}"></view>
     <text>{{connected ? '连接正常，可以控制设备' : '开启手机蓝牙后连接设备'}}</text>

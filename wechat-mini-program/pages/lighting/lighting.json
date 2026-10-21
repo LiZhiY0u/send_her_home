@@ -1,7 +1,7 @@
 {
-  "navigationBarTitleText": "灯阵实验室",
-  "navigationBarBackgroundColor": "#08121f",
-  "navigationBarTextStyle": "white",
-  "backgroundColor": "#08121f",
+  "navigationBarTitleText": "探索灯光",
+  "navigationBarBackgroundColor": "#f7f8fa",
+  "navigationBarTextStyle": "black",
+  "backgroundColor": "#f7f8fa",
   "disableScroll": false
 }
