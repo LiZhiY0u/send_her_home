@@ -14,4 +14,15 @@ test('paint resize redraws existing draft with fresh bounds and resets stroke co
  assert.equal(page.frame,frame);assert.equal(frame[0],12)
  assert.equal(page.previous,null);assert.equal(page.rect.left,30)
  assert.equal(canvas.width,520);assert.equal(scaled,1);assert.equal(drawn,1)
+ // Native Canvas can lose its bitmap while hidden beneath the picker.
+ // Restore dimensions and redraw the same draft after the view is visible.
+ page.data={...page.data,colorPickerVisible:true}
+ page.setData=(patch,done)=>{Object.assign(page.data,patch);if(done)done()}
+ page.cancelColorPicker();callback([{node:canvas,width:260,height:260,left:30,top:10}])
+ assert.equal(page.data.colorPickerVisible,false)
+ assert.equal(page.frame,frame);assert.equal(drawn,2)
+ page.data.colorPickerVisible=true
+ page.confirmPickerColor({detail:{color:'#123456'}})
+ callback([{node:canvas,width:260,height:260,left:30,top:10}])
+ assert.equal(page.data.color,'#123456');assert.equal(drawn,3)
 })

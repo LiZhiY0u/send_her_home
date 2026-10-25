@@ -19,7 +19,13 @@ function framePackets(frame,session,sequence) {
 }
 function decodeStatus(bytes) {
   const p=new Uint8Array(bytes)
-  if(p.length!==16||p[0]!==0xa7||p[1]!==1)return null
+  if(![16,20].includes(p.length)||p[0]!==0xa7||p[1]!==1)return null
+  if(p.length===20){
+    if(p[7]!==7||p[8]>=22||p[9]>100||p[10]>100||p[14]>1||p[15]>2||p[16]>6||p[17]>3)return null
+    return {code:p[2],mode:p[3],session:p[4],sequence:p[5]|p[6]<<8,op:7,
+      effect:p[8],speed:p[9],brightness:p[10],color:'#'+Array.from(p.slice(11,14),v=>v.toString(16).padStart(2,'0')).join(''),
+      randomColor:!!p[14],layer:['both','top','bottom'][p[15]],region:['all','CENTER','corners','UL','UR','LL','LR'][p[16]],linkedMode:['sync','reverse','mirror','delay'][p[17]],elapsed:(p[18]|p[19]<<8)/100}
+  }
   return {code:p[2],mode:p[3],session:p[4],sequence:p[5]|p[6]<<8,op:p[7],
     hash:(p[8]|p[9]<<8|p[10]<<16|p[11]<<24)>>>0,count:p[12],brightness:p[13]}
 }

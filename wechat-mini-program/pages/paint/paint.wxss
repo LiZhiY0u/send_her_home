@@ -14,3 +14,5 @@ page{background:#f7f8fa;color:#282535}.eyebrow{color:#a19aaa;font-size:19rpx}.ti
  .colors{margin:12px 0;padding:16px 8px;border-radius:14px}.swatch{width:26px;height:26px}.chosen{outline-width:2px;outline-offset:3px}
  .range{font-size:12px}slider{margin:12px 0 18px}.sync{font-size:13px;line-height:40px;border-radius:12px}.auto{font-size:12px;margin-top:8px}.tip{font-size:10px;margin:12px 0}
 }
+.colors{flex-wrap:wrap;justify-content:flex-start;gap:14px}.colors .swatch{flex:0 0 28px;width:28px;min-width:28px;max-width:28px;height:28px;box-sizing:border-box}.colors .chosen{outline:2px solid #8b70df;outline-offset:3px}
+.custom-color{display:flex;align-items:center;gap:10px;width:100%;margin:0 0 20px;padding:10px 12px;line-height:24px;background:#f2edf9;color:#806999;border:0;border-radius:12px;font-size:12px;box-sizing:border-box}.custom-color-dot{width:22px;height:22px;border-radius:7px;border:1px solid #00000018;flex-shrink:0}.custom-color text:last-child{margin-left:auto;font-size:11px}

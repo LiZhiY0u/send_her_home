@@ -31,6 +31,7 @@ slider { margin:22rpx 0 32rpx; }
 .notes { color:#688397; font-size:19rpx; line-height:1.9; text-align:center; margin-top:26rpx; }
 .paint-entry {padding:24rpx;text-align:center;color:#7860be;background:#eeebf8;border-radius:24rpx;margin-bottom:24rpx;font-size:25rpx}
 .swatch.chosen {outline-color:#8b70df}
+.custom-color{display:flex;align-items:center;gap:10px;width:100%;margin:0 0 20px;padding:10px 12px;line-height:24px;background:#f2edf9;color:#806999;border-radius:12px;font-size:12px;box-sizing:border-box}.custom-color-dot{width:22px;height:22px;border-radius:7px;border:1px solid #00000018;flex-shrink:0}.custom-color text:last-child{margin-left:auto;font-size:11px}
 .device-control{padding:12px;margin-bottom:12px;background:#eeebf8;border-radius:14px;font-size:11px;color:#83758e;line-height:1.7}.device-control button{background:#7560dd;color:#fff;font-size:13px;line-height:38px;margin-bottom:8px;border-radius:12px}
 
 /* The page owns the viewport; only the controls pane scrolls. Use px here
@@ -46,7 +47,7 @@ slider { margin:22rpx 0 32rpx; }
 .controls-content{padding:12px 0 8px}.paint-entry{font-size:12px;padding:12px;margin-bottom:12px;border-radius:12px}
 .panel{padding:16px;border-radius:18px}.section-label{font-size:11px;margin-bottom:10px}.section-label text{font-size:13px;margin-left:8px}
 .choices{gap:7px;margin-bottom:18px}.chip,.regions .chip{font-size:12px;line-height:34px;padding:0 12px;border-radius:12px}
-.color-row{padding:0 4px 20px}.swatch{width:27px;height:27px}.range-label,.linked{font-size:12px}.linked{gap:10px}
+.color-row{padding:8px 6px 20px;flex-wrap:wrap;justify-content:flex-start;gap:14px}.color-row .swatch{flex:0 0 28px;width:28px;min-width:28px;max-width:28px;height:28px;box-sizing:border-box;border:1px solid #00000012}.color-row .swatch.chosen{outline:2px solid #8b70df;outline-offset:3px}.range-label,.linked{font-size:12px}.linked{gap:10px}
 .notes{font-size:10px;margin-top:14px}.error{font-size:12px;padding:12px}
 @media (orientation:landscape){
   .lab{flex-direction:row;gap:16px;padding:10px calc(12px + env(safe-area-inset-right)) calc(8px + env(safe-area-inset-bottom)) calc(12px + env(safe-area-inset-left))}

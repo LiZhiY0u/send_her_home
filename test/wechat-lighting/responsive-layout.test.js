@@ -3,7 +3,7 @@ const assert=require('node:assert/strict')
 const fs=require('node:fs')
 const path=require('node:path')
 const {createLightingPage}=require('../../wechat-mini-program/lighting/page-controller')
-test('linked effect choices send device updates but preview-only region selection does not',()=>{
+test('linked effect and region choices both send device updates',()=>{
  const page=createLightingPage({});page.data={...page.data,deviceLinked:true}
  page.setData=patch=>Object.assign(page.data,patch);page.redraw=()=>{}
  let calls=0;page.applyDeviceEffect=()=>{calls++}
@@ -11,7 +11,7 @@ test('linked effect choices send device updates but preview-only region selectio
  page.choose({currentTarget:{dataset:{field:'region',value:'CENTER'}}})
  page.slider({type:'changing',currentTarget:{dataset:{field:'speed'}},detail:{value:40}})
  page.slider({type:'change',currentTarget:{dataset:{field:'speed'}},detail:{value:40}})
- assert.equal(calls,2)
+ assert.equal(calls,3)
 })
 test('resize refreshes canvas bounds without resetting settings or recreating renderer',()=>{
   let callback, size

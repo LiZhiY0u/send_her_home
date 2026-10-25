@@ -1,0 +1,10 @@
+const {test}=require('node:test'),assert=require('node:assert/strict')
+const fs=require('node:fs'),path=require('node:path')
+test('lighting swatches avoid native button minimum width and allow wrapping',()=>{
+ const root=path.resolve(__dirname,'../../wechat-mini-program/pages/lighting')
+ const wxml=fs.readFileSync(path.join(root,'lighting.wxml'),'utf8')
+ const row=wxml.split('\n').find(line=>line.includes('class="color-row"'))
+ assert(row.includes('<view wx:for'));assert(!row.includes('<button'))
+ const css=fs.readFileSync(path.join(root,'lighting.wxss'),'utf8')
+ assert(css.includes('flex:0 0 28px'));assert(css.includes('flex-wrap:wrap;justify-content:flex-start;gap:14px'))
+})

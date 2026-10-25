@@ -77,13 +77,19 @@ function createPaintSender(connection,onState,options={}) {
       const color=settings.color.slice(1)
       const payload=[id,percent(settings.speed),percent(settings.brightness),... [0,2,4].map(i=>parseInt(color.slice(i,i+2),16))]
       if(settings.randomColor)payload.push(1)
+      const layer=['both','top','bottom'].indexOf(settings.layer||'both')
+      const region=['all','CENTER','corners','UL','UR','LL','LR'].indexOf(settings.region||'all')
+      const link=['sync','reverse','mirror','delay'].indexOf(settings.linkedMode||'sync')
+      if(Math.min(layer,region,link)<0)throw new Error('灯板选择参数错误')
+      if(payload.length===6)payload.push(0)
+      payload.push(layer,region,link)
       api.stop();if(running)await running
       const t=token;lastError=null;listen()
       try{
         await handshake(t);check(t)
         const seq=++sequence,ack=wait(6,seq,t)
         await connection.write(P.WRITE,P.packet(6,session,seq,0,0,payload));await ack;check(t)
-        onState('底面灯效已应用')
+        onState('顶面和底面灯效已应用')
       }finally{if(t===token)api.stop()}
     },
     async restoreAuto(){

@@ -1,8 +1,9 @@
 {
-  "navigationBarTitleText": "探索灯光",
+  "navigationBarTitleText": "？！灯灯！？",
   "navigationBarBackgroundColor": "#f7f8fa",
   "navigationBarTextStyle": "black",
   "backgroundColor": "#f7f8fa",
   "disableScroll": true,
-  "pageOrientation": "auto"
+  "pageOrientation": "auto",
+  "usingComponents": {"color-picker":"../../components/color-picker/color-picker"}
 }

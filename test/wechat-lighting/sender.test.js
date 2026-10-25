@@ -31,16 +31,17 @@ test('effect sends stable ID and parameters and waits for firmware application A
  const sender=createPaintSender(connection,s=>states.push(s),{timeout:200})
  const promise=sender.applyEffect({effect:'squareMove',speed:50,brightness:80,color:'#ff8000'})
  for(let i=0;i<30&&!effectPacket;++i)await Promise.resolve()
- assert.deepEqual(Array.from(effectPacket.slice(8)),[7,50,80,255,128,0])
- assert(!states.includes('底面灯效已应用'));listener(statusFor(effectPacket));await promise
- assert(states.includes('底面灯效已应用'))
+ assert.deepEqual(Array.from(effectPacket.slice(8)),[7,50,80,255,128,0,0,0,0,0])
+ assert(!states.includes('顶面和底面灯效已应用'));listener(statusFor(effectPacket));await promise
+ assert(states.includes('顶面和底面灯效已应用'))
 })
 test('random color effect appends mode flag to the BLE command',async()=>{
  let listener,packet
  const connection={enablePainting:async()=>{},onStatus:f=>{listener=f;return()=>{}},write:async(uuid,p)=>{if(p[2]===6)packet=p;listener(statusFor(p))}}
  const sender=createPaintSender(connection,()=>{},{timeout:100})
- await sender.applyEffect({effect:'waveX',speed:50,brightness:65,color:'#ff0000',randomColor:true})
- assert.equal(packet.length,15);assert.equal(packet[14],1)
+ await sender.applyEffect({effect:'waveX',speed:50,brightness:65,color:'#ff0000',randomColor:true,layer:'top',region:'UL',linkedMode:'mirror'})
+ assert.equal(packet.length,18);assert.equal(packet[14],1)
+ assert.deepEqual(Array.from(packet.slice(15)),[1,3,2])
 })
 test('device busy is retried once with a fresh frame sequence',async()=>{
   let listener,commits=0;const states=[]

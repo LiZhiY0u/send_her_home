@@ -1,8 +1,9 @@
 {
-  "navigationBarTitleText": "以光作画",
+  "navigationBarTitleText": "？！画画！？",
   "navigationBarBackgroundColor": "#f7f8fa",
   "navigationBarTextStyle": "black",
   "backgroundColor": "#f7f8fa",
   "disableScroll": false,
-  "pageOrientation": "auto"
+  "pageOrientation": "auto",
+  "usingComponents": {"color-picker":"../../components/color-picker/color-picker"}
 }

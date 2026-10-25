@@ -1,32 +1,31 @@
 <view class="lab">
   <view class="preview-pane">
-  <view class="intro"><view class="eyebrow">LIGHT STUDIO</view><view class="heading">为收藏，创造氛围</view><view class="offline"><text class="dot"></text>{{deviceLinked ? '底面灯效联动已开启' : '本地预览 · 点击应用以控制底面'}}</view></view>
+  <view class="intro"><view class="heading">？！灯灯！？</view></view>
   <view class="stage">
-    <view class="stage-top"><text>DUAL ARRAY</text><text>133 × 2 / 266 LEDs</text></view>
-    <canvas type="webgl" id="light-scene" class="canvas" catchtouchstart="touchStart" catchtouchmove="touchMove" bindtouchend="touchEnd" bindtouchcancel="touchEnd" bindtap="tapScene"></canvas>
+    <canvas hidden="{{colorPickerVisible}}" type="webgl" id="light-scene" class="canvas" catchtouchstart="touchStart" catchtouchmove="touchMove" bindtouchend="touchEnd" bindtouchcancel="touchEnd" bindtap="tapScene"></canvas>
     <view class="error" wx:if="{{error}}"><text>{{error}}</text><navigator open-type="navigateBack" class="back-link">返回遥控器</navigator></view>
-    <view class="stage-bottom"><text>单指旋转 · 双指缩放</text><text>3D PREVIEW</text></view>
   </view>
   <view class="view-tools"><button size="mini" data-view="overall" bindtap="setView">整体</button><button size="mini" data-view="top" bindtap="setView">俯视</button><button size="mini" data-view="reset" bindtap="setView">复位</button><button size="mini" class="play" bindtap="togglePlayback">{{playing ? '暂停预览' : '播放预览'}}</button></view>
   </view>
   <scroll-view class="controls-scroll" scroll-y enhanced show-scrollbar="{{false}}">
   <view class="controls-content">
-  <view class="device-control"><button loading="{{deviceBusy}}" disabled="{{deviceBusy}}" bindtap="applyDeviceEffect">应用到底面灯板</button><view>{{deviceStatus}}</view><view>仅发送灯效、颜色、速度和亮度；区域与上下联动仍仅预览。实物亮度受约10%上限保护。</view></view>
-  <navigator url="/pages/paint/paint" class="paint-entry">在底面上作画 ↗</navigator>
+  <view class="device-control"><button loading="{{deviceBusy}}" disabled="{{deviceBusy}}" bindtap="applyDeviceEffect">应用到顶面和底面灯板</button><view>{{deviceStatus}}</view></view>
+  <navigator url="/pages/paint/paint" class="paint-entry">在双面灯板上作画 ↗</navigator>
   <view class="panel">
-    <view class="range-label"><text>随机颜色 · 每5秒渐变</text><switch checked="{{randomColor}}" color="#8b70df" bindchange="toggleRandomColor" /></view>
+    <view class="range-label"><text>随机颜色 · 渐变4秒</text><switch checked="{{randomColor}}" color="#8b70df" bindchange="toggleRandomColor" /></view>
     <view class="section-label">01 <text>选择灯层</text></view>
     <view class="choices"><button wx:for="{{layers}}" wx:key="value" class="chip {{layer === item.value ? 'active' : ''}}" data-field="layer" data-value="{{item.value}}" bindtap="choose">{{item.label}}</button></view>
     <view class="section-label">02 <text>选择区域</text></view>
     <view class="choices regions"><button wx:for="{{regions}}" wx:key="value" class="chip {{region === item.value ? 'active' : ''}}" data-field="region" data-value="{{item.value}}" bindtap="choose">{{item.label}}</button></view>
     <view class="section-label">03 <text>灯光效果</text></view>
     <view class="choices"><button wx:for="{{effects}}" wx:key="value" class="chip {{effect === item.value ? 'active' : ''}}" data-field="effect" data-value="{{item.value}}" bindtap="choose">{{item.label}}</button></view>
-    <view class="color-row"><button wx:for="{{colors}}" wx:key="*this" class="swatch {{color === item ? 'chosen' : ''}}" style="background:{{item}}" data-field="color" data-value="{{item}}" bindtap="choose"></button></view>
+    <view class="color-row"><view wx:for="{{colors}}" wx:key="*this" aria-role="button" aria-label="颜色 {{item}}" class="swatch {{color === item ? 'chosen' : ''}}" style="background:{{item}}" data-field="color" data-value="{{item}}" bindtap="choose"></view></view>
+    <button class="custom-color" bindtap="openColorPicker"><view class="custom-color-dot" style="background:{{color}}"></view><text>自定义颜色</text><text>{{color}}</text></button>
     <view class="range-label"><text>亮度</text><text>{{brightness}}%</text></view><slider min="0" max="100" value="{{brightness}}" activeColor="#8b70df" backgroundColor="#ece8f4" block-color="#8b70df" block-size="18" data-field="brightness" bindchanging="slider" bindchange="slider" />
     <view class="range-label"><text>速度</text><text>{{speed}}%</text></view><slider min="0" max="100" value="{{speed}}" activeColor="#8b70df" backgroundColor="#ece8f4" block-color="#8b70df" block-size="18" data-field="speed" bindchanging="slider" bindchange="slider" />
     <view class="linked"><text>上下联动</text><view class="choices"><button wx:for="{{linkModes}}" wx:key="value" class="chip {{linkedMode === item.value ? 'active' : ''}}" data-field="linkedMode" data-value="{{item.value}}" bindtap="choose">{{item.label}}</button></view></view>
   </view>
-  <view class="notes">200 × 200 × 300mm 为示意尺寸 · 顶部安装朝向待校准<view>灯点与光晕仅表达效果，不模拟真实照度与反射。</view></view>
   </view>
   </scroll-view>
 </view>
+<color-picker visible="{{colorPickerVisible}}" color="{{color}}" bindpreview="previewPickerColor" bindconfirm="confirmPickerColor" bindcancel="cancelColorPicker" />

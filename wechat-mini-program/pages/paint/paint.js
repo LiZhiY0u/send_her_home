@@ -4,8 +4,9 @@ const {paintSegment}=require('../../painting/brush')
 const {toWorld,drawBoard}=require('../../painting/canvas')
 const {createPaintSender}=require('../../painting/sender')
 const {getDraft,saveDraft}=require('../../painting/draft')
+const {normalizeHex}=require('../../color/color-math')
 Page({
-  data:{status:'本地草稿 · 尚未同步设备',diameter:24,color:'#ff5e93',eraser:false,busy:false,error:'',
+  data:{status:'本地草稿 · 尚未同步设备',diameter:24,color:'#ff5e93',eraser:false,busy:false,error:'',colorPickerVisible:false,
     colors:['#ff5e93','#57d9ff','#ffc46b','#a78bfa','#e9f4ff','#66e3a4']},
   onLoad(){
     this.alive=true;this.frame=getDraft().frame
@@ -26,7 +27,7 @@ Page({
       }catch(error){this.setData({error:error.message})}
     })
   },
-  onHide(){this.previous=null;saveDraft(this.frame);this.sender.stop();this.setData({status:'同步已暂停 · 灯板保留最后画面',busy:false})},
+  onHide(){if(this.data.colorPickerVisible)this.cancelColorPicker();this.previous=null;saveDraft(this.frame);this.sender.stop();this.setData({status:'同步已暂停 · 灯板保留最后画面',busy:false})},
   onUnload(){this.alive=false;this.previous=null;saveDraft(this.frame);this.sender.stop();this.context=null;this.canvas=null},
   redraw(){if(this.context&&this.rect)drawBoard(this.context,points,this.frame,this.rect.width)},
   stroke(point){
@@ -45,6 +46,10 @@ Page({
   },
   touchEnd(){this.previous=null},
   chooseColor(event){this.setData({color:event.currentTarget.dataset.color,eraser:false})},
+  openColorPicker(){this.previous=null;this._colorBeforePicker={color:this.data.color,eraser:this.data.eraser};this.setData({colorPickerVisible:true})},
+  previewPickerColor(event){if(!this.data.colorPickerVisible)return;const color=normalizeHex(event.detail.color);if(color)this.setData({color,eraser:false})},
+  cancelColorPicker(){this.setData({...(this._colorBeforePicker||{}),colorPickerVisible:false},()=>{if(this.alive)this.resizeBoard()})},
+  confirmPickerColor(event){if(!this.data.colorPickerVisible)return;const color=normalizeHex(event.detail.color);if(color)this.setData({color,eraser:false,colorPickerVisible:false},()=>{if(this.alive)this.resizeBoard()})},
   setWidth(event){this.setData({diameter:Math.max(10,Math.min(60,Number(event.detail.value)))})},
   toggleEraser(){this.setData({eraser:!this.data.eraser})},
   clearBoard(){this.frame.fill(0);saveDraft(this.frame);this.redraw();this.sender.submit(this.frame)},
