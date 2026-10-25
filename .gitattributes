@@ -2,3 +2,8 @@
 *.PDF binary
 *.epro2 binary
 *.png binary
+*.SLDPRT binary
+*.sldprt binary
+*.STL binary
+*.stl binary
+*.swp binary
