@@ -16,13 +16,15 @@ void UiPages::MotorInit() {
     // control changes claim it; navigation cannot stop remote-owned motion.
 }
 void UiPages::MotorProcess() {
-    char run[24], direction[24], speed[24];
+    char run[24], direction[24], speed[24],exitPolicy[24];
     std::snprintf(run, sizeof(run), "- Run %s %s", state.running ? "ON" : "OFF",
         state.remote?(state.keepRunning?"HOLD":"LEASE"):"LOCAL");
     std::snprintf(direction, sizeof(direction), "- Dir       %s", state.reverse ? "REV" : "FWD");
     std::snprintf(speed, sizeof(speed), "- Speed     %d%%", state.speed);
+    std::snprintf(exitPolicy,sizeof(exitPolicy),"- Exit      %s",state.keepRunning?"HOLD":"STOP");
     const M_SELECT menu[] = {{"[ Motor ]", MenuItemType::Back},
-        {run, MenuItemType::Action}, {direction, MenuItemType::Action}, {speed, MenuItemType::Action}};
+        {run, MenuItemType::Action}, {direction, MenuItemType::Action}, {speed, MenuItemType::Action},
+        {exitPolicy,MenuItemType::Action}};
     OledUI::List_Show(menu, M_MOTOR);
     if (!btn.pressed) return;
     btn.pressed = false;
@@ -34,6 +36,7 @@ void UiPages::MotorProcess() {
         case 1: state.ToggleRun(); Apply(); break;
         case 2: state.ToggleDirection(); break;
         case 3: OledUI::NavigateTo(M_MOTOR_SPEED); break;
+        case 4: state.keepRunning=!state.keepRunning;Apply();break;
         }
     }
 }

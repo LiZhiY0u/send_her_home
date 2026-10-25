@@ -49,7 +49,7 @@ void OledUI::UI_Init()
     ui.num[M_LIGHT_BRI]  = light_bri_menu_count;
     ui.num[M_LIGHT_COLOR] = light_color_menu_count;
     ui.num[M_LIGHT_EFFECT]= light_effect_menu_count;
-    ui.num[M_MOTOR] = 4;
+    ui.num[M_MOTOR] = 5;
     ui.num[M_MOTOR_SPEED] = 1;
 }
 

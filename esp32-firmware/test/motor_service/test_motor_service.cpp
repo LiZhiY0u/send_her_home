@@ -24,4 +24,7 @@ int main(){
  MotorService::Connect();command(1,3,1);assert(reply()==0);
  uint8_t queued[]={0xb8,1,2,3,0,2,0,1,0,30,1,15};assert(MotorService::Enqueue(queued,12));
  MotorService::Disconnect();MotorService::Connect();MotorService::Tick();assert(motor.duty==0);
+ auto& state=MotorService::State();state.running=true;state.speed=30;state.keepRunning=true;
+ MotorService::ApplyLocal();assert(motor.duty==76);MotorService::StopLocal();assert(motor.duty==76);
+ state.keepRunning=false;MotorService::StopLocal();assert(motor.duty==0);
 }

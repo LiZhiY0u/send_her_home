@@ -59,10 +59,10 @@ void OledUI::Main_Proc()
             switch (ui.select[ui.layer])
             {
             case 0: NavigateTo(M_LIGHT_MAIN); break;
-            case 1: NavigateTo(M_EDITOR); break;
-            case 2: NavigateTo(M_VOLT); break;
-            case 3: NavigateTo(M_SETTING); break;
-            case 4: NavigateTo(M_MOTOR); break;
+            case 1: NavigateTo(M_MOTOR); break;
+            case 2: NavigateTo(M_EDITOR); break;
+            case 3: NavigateTo(M_VOLT); break;
+            case 4: NavigateTo(M_SETTING); break;
             }
             break;
         }

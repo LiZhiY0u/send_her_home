@@ -46,7 +46,7 @@ bool MotorService::ReadReply(uint8_t* p){
 }
 MotorModel& MotorService::State(){return state;}
 void MotorService::ApplyLocal(){state.TakeLocal();Apply();}
-void MotorService::StopLocal(){if(!state.remote){state.Stop();motor.stop();appliedDuty=0;}}
+void MotorService::StopLocal(){if(!state.remote&&!state.keepRunning){state.Stop();motor.stop();appliedDuty=0;}}
 void MotorService::Tick(){
  const uint32_t now=millis(),currentEpoch=epoch.load();
  state.Tick(now,connected.load(),currentEpoch);Apply();

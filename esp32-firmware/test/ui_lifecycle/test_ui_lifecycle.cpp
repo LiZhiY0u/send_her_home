@@ -27,7 +27,10 @@ int main() {
     OledUI::Init();
     assert(light_main_menu_count==5);
     OledUI::OpenRoot(M_LIGHT_MAIN);ui.select[0]=4;btn.id=BTN_ID_SP;btn.pressed=true;
-    OledUI::Light_Main_Proc();assert(PaintBridge::LocalTest().automatic);
+    OledUI::Light_Main_Proc();assert(PaintBridge::LocalTest().automatic);assert(ui.index==M_LIGHT_MAIN);
+    PaintBridge::LocalTest().accept=false;btn.pressed=true;
+    OledUI::Light_Main_Proc();assert(ui.index==M_LIGHT_MAIN);
+    PaintBridge::LocalTest().accept=true;btn.pressed=true;OledUI::Light_Main_Proc();
     assert(light_effect_menu_count==24);
     OledUI::OpenRoot(M_LIGHT_MAIN);ui.select[0]=3;btn.id=BTN_ID_SP;btn.pressed=true;
     OledUI::Light_Main_Proc();OledUI::Layer_Init_In();assert(ui.index==M_LIGHT_EFFECT);
@@ -66,9 +69,10 @@ int main() {
     assert(check_box.s==selection && *selection==3);
     OledUI::OpenRoot(M_MAIN);
     assert(main_menu_count == 5 && main_icon_count == 5);
-    assert(main_icon_pic[4][0]==0xff); // Same filled background polarity as Light.
-    assert(main_icon_pic[4][32]==0xef); // Preserve motor outline, invert its pixels.
-    assert(OledUI::NavigateTo(M_MOTOR)); OledUI::Layer_Init_In();
+    assert(main_icon_pic[1][0]==0xff); // Motor is directly after Light.
+    assert(main_icon_pic[1][32]==0xef); // Preserve the inverted motor outline.
+    ui.select[0]=1;btn.id=BTN_ID_SP;btn.pressed=true;
+    OledUI::Main_Proc();OledUI::Layer_Init_In();assert(ui.index==M_MOTOR);
     ui.state = S_NONE; ui.init = true;
     ui.select[ui.layer] = 1; btn.id = BTN_ID_SP; btn.pressed = true;
     UiPages::MotorProcess(); assert(motor.duty == 76);
@@ -80,9 +84,15 @@ int main() {
     btn.id = BTN_ID_SP; btn.pressed = true;
     UiPages::MotorSpeedProcess(); OledUI::Layer_Init_Out();
     assert(ui.index == M_MOTOR && motor.duty == 89);
-    assert(OledUI::Back()); assert(motor.duty == 0);
+    assert(MotorService::State().keepRunning);
+    assert(OledUI::Back()); assert(motor.duty == 89);
     OledUI::Layer_Init_Out();
     assert(OledUI::NavigateTo(M_MOTOR)); OledUI::Layer_Init_In();
+    assert(motor.duty==89&&ui.num[M_MOTOR]==5);
+    ui.select[ui.layer]=4;btn.id=BTN_ID_SP;btn.pressed=true;UiPages::MotorProcess();
+    assert(!MotorService::State().keepRunning&&motor.duty==89);
+    assert(OledUI::Back());assert(motor.duty==0);OledUI::Layer_Init_Out();
+    assert(OledUI::NavigateTo(M_MOTOR));OledUI::Layer_Init_In();
     assert(motor.duty == 0);
     assert(OledUI::NavigateTo(M_MOTOR_SPEED));OledUI::Layer_Init_In();
     MotorService::State().remote=true;MotorService::State().running=true;
