@@ -1,4 +1,5 @@
 #include "ConnectionEvents.h"
+#include "App/WakeGate.h"
 #include <atomic>
 #include <freertos/FreeRTOS.h>
 #include <freertos/queue.h>
@@ -14,6 +15,7 @@ bool ConnectionEvents::Init()
 }
 bool ConnectionEvents::Push(Event event)
 {
+    if(event==Event::GamepadConnected||event==Event::MiniAppConnected)WakeGate::Wake();
     if (queue == nullptr) return false;
     if (xQueueSend(queue, &event, 0) == pdTRUE) return true;
     dropped.fetch_add(1, std::memory_order_relaxed);

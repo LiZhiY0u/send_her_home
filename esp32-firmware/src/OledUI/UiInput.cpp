@@ -3,6 +3,7 @@
 #include "Input/InputAdapters.h"
 #include "UiInputAdapter.h"
 #include "Encoder/HAL_Encoder.h"
+#include "App/WakeGate.h"
 #ifndef ENABLE_SERIAL_INPUT_DEBUG
 #define ENABLE_SERIAL_INPUT_DEBUG 0
 #endif
@@ -25,6 +26,7 @@ void OledUI::Key_Scan()
     // Keep a pending UI event intact during page transitions.
     UserInput::Event event;
     if (!btn.pressed && InputQueue::Read(event)) {
+        if(WakeGate::Wake())return; // First navigation event wakes without entering a menu.
         const uint8_t id = UiInputAdapter::ButtonId(event.action);
         if (id != 255) {
             btn.id = id;

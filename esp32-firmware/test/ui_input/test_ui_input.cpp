@@ -1,4 +1,5 @@
 #include <cassert>
+#include "App/WakeGate.h"
 #include <deque>
 #include "OledUI/UiContext.h"
 #include "Input/InputQueue.h"
@@ -12,6 +13,9 @@ bool Push(const UserInput::Event& event) { events.push_back(event);return true; 
 bool Read(UserInput::Event& event) { if(events.empty())return false;event=events.front();events.pop_front();return true; }
 }
 int main() {
+    assert(!WakeGate::Awake());
+    events.push_back({UserInput::Action::Confirm,UserInput::Source::Encoder,0});
+    OledUI::Key_Scan();assert(WakeGate::Awake());assert(!btn.pressed);assert(events.empty());
     events.push_back({UserInput::Action::Confirm,UserInput::Source::Gamepad,1});
     diff=1; OledUI::Key_Scan();
     assert(btn.pressed && btn.id==BTN_ID_SP && events.size()==1);

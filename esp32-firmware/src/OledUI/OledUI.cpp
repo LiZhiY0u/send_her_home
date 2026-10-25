@@ -10,6 +10,7 @@
 #include "UiContext.h"
 #include "UiPages/UiPages.h"
 #include "ConnectionToast.h"
+#include "App/WakeGate.h"
 
 void OledUI::UI_Param_Init()
 {
@@ -57,6 +58,7 @@ static void ui_proc();
 void OledUI::Task()
 {
     Key_Scan();
+    if(!WakeGate::Awake())return;
     ui_proc();
 }
 
@@ -103,6 +105,8 @@ void OledUI::Init()
 
     // Hardware
     OledDriver::Init();
+    OledDriver::ClearBuffer();
+    OledDriver::SendBuffer();
     OledDriver::SetContrast(ui.param[DISP_BRI]);
 
     // Boot to main menu through the same lifecycle used by wake-up.

@@ -1,4 +1,5 @@
 #include <cassert>
+#include "App/WakeGate.h"
 #include "OledUI/UiContext.h"
 #include "Input/InputQueue.h"
 #include "Bluetooth/ConnectionEvents.h"
@@ -22,7 +23,11 @@ bool Read(UserInput::Event&){return false;}
 namespace ConnectionEvents { bool Read(Event&){return false;} }
 namespace ENCODER { int16_t Encoder_GetDiff(){return 0;} }
 int main() {
+    WakeGate::Wake();
     OledUI::Init();
+    assert(light_main_menu_count==5);
+    OledUI::OpenRoot(M_LIGHT_MAIN);ui.select[0]=4;btn.id=BTN_ID_SP;btn.pressed=true;
+    OledUI::Light_Main_Proc();assert(PaintBridge::LocalTest().automatic);
     assert(light_effect_menu_count==24);
     OledUI::OpenRoot(M_LIGHT_MAIN);ui.select[0]=3;btn.id=BTN_ID_SP;btn.pressed=true;
     OledUI::Light_Main_Proc();OledUI::Layer_Init_In();assert(ui.index==M_LIGHT_EFFECT);

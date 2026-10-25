@@ -1,0 +1,38 @@
+#include <cassert>
+#include "App/WakeGate.h"
+#include "Lighting/StartupSequence.h"
+#include "Lighting/RandomEffect.h"
+int main(){
+    assert(!WakeGate::Awake());assert(WakeGate::Wake());assert(!WakeGate::Wake());
+    StartupSequence::State state;
+    assert(!state.Active(false,100));assert(state.Active(true,100));
+    assert(state.Strength(0,0,100)==1);assert(state.Strength(100,100,100)==0);
+    assert(state.Active(true,1100));assert(state.Strength(30,0,1100)==1);
+    assert(state.Strength(90,90,1100)==0);
+    assert(state.Active(true,2100));assert(state.Strength(100,100,2100)==1);
+    assert(StartupSequence::Color==0xffffff);
+    assert(StartupSequence::HoldMs==0);
+    assert(state.Strength(100,100,2120)==0); // Starts shrinking on the next frame, without a hold.
+    assert(state.Active(true,3100));
+    assert(state.Strength(30,0,3100)==1);assert(state.Strength(100,100,3100)==0);
+    assert(state.Active(true,4100));assert(state.Strength(0,0,4100)==0); // All dark frame.
+    const uint32_t ripple=100+StartupSequence::FillMs+StartupSequence::HoldMs+StartupSequence::DrainMs+StartupSequence::DarkMs;
+    assert(state.Strength(0,0,ripple)==1);
+    assert(state.Strength(80,0,ripple+1000)==1);
+    assert(state.Strength(0,0,ripple+2000)==1); // Second expansion.
+    assert(state.Strength(80,0,ripple+3000)==1);
+    const uint32_t rotate=ripple+StartupSequence::RippleMs;
+    assert(state.Strength(80,0,rotate)==1);
+    assert(state.Strength(0,80,rotate+1000)>.99f);
+    assert(state.Strength(80,0,rotate+4000)>.99f); // Second full turn.
+    assert(state.Active(true,100+StartupSequence::TotalMs-1));
+    assert(!state.Active(true,100+StartupSequence::TotalMs));
+    assert(!state.Active(true,100+StartupSequence::TotalMs+1000));
+    StartupSequence::State command;command.Finish();assert(!command.Active(true,0));
+    StartupSequence::State wrap;assert(wrap.Active(true,0xffffff00u));
+    assert(wrap.Active(true,0xffffff00u+StartupSequence::TotalMs-1));
+    assert(!wrap.Active(true,0xffffff00u+StartupSequence::TotalMs));
+    RandomEffect::State random(123);unsigned previous=0;bool seen[SpatialEffects::Count]={};
+    for(unsigned i=0;i<1000;++i){const auto effect=random.Next();assert(effect>0&&effect<SpatialEffects::Count);assert(effect!=previous);seen[effect]=true;previous=effect;}
+    for(unsigned i=1;i<SpatialEffects::Count;++i)assert(seen[i]);
+}

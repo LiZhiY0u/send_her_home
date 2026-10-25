@@ -2,9 +2,11 @@
 #include "Encoder/HAL_Encoder.h"
 #include "Input/InputQueue.h"
 #include "Encoder/StartupReleaseGuard.h"
+#include "App/WakeGate.h"
 
 static ButtonEvent EncoderPush(3000);
 static StartupReleaseGuard EncoderStartupRelease;
+static bool wakePress=false;
 
 static bool EncoderEnable = true;        // encoder使能
 static volatile int16_t EncoderDiff = 0; // encoder脉冲，用一次就清零
@@ -57,6 +59,7 @@ static void Encoder_PushHandler(ButtonEvent *btn, int event)
     }
     else if (event == ButtonEvent::EVENT_PRESSED)
     {
+        wakePress=WakeGate::Wake();
         // Serial.printf("EVENT_PRESSED");
     }
     else if (event == ButtonEvent::EVENT_PRESSING)
@@ -73,6 +76,7 @@ static void Encoder_PushHandler(ButtonEvent *btn, int event)
     }
     else if (event == ButtonEvent::EVENT_SHORT_CLICKED)
     {
+        if(wakePress){wakePress=false;return;}
         // Serial.printf("EVENT_SHORT_CLICKED");
         // key_msg.id = 2;
         // key_msg.pressed = true;

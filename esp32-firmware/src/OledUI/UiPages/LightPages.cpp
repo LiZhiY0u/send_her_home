@@ -4,6 +4,7 @@
 #include "../UiNavigation.h"
 #include "HAL/HAL.h"
 #include "Lighting/PaintBridge.h"
+#include "Lighting/DeviceState.h"
 #include <cstdio>
 namespace {
 uint8_t light_brightness = 100;  // Relative to the fixed 26/255 hardware cap.
@@ -23,11 +24,11 @@ const char* light_effect_name[] = {
 };
 static uint8_t light_color_select = 0;
 bool localRandomColor=false;
+bool restoreRandomBusy=false;
 } // namespace
 void UiPages::Light_Main_Param_Init()
 {
-    // The submenu entries are display-only until LED hardware control is
-    // connected. They intentionally use the plain '-' menu type.
+    // All entries are actions; restoration is handled by the lighting task.
 }
 
 void UiPages::Light_Bri_Param_Init()
@@ -47,10 +48,12 @@ void UiPages::Light_Effect_Param_Init()
 
 void OledUI::Light_Main_Show()
 {
+    LightingState::Snapshot state;if(LightingState::Read(state)){light_brightness=state.settings[2];localRandomColor=state.settings[6]!=0;}
     const M_SELECT menu[]={{"[ Light ]",MenuItemType::Back},
         {"- Brightness",MenuItemType::Action},
         {localRandomColor?"- Random Color ON":"- Random Color OFF",MenuItemType::Action},
-        {"- Effect",MenuItemType::Action}};
+        {"- Effect",MenuItemType::Action},
+        {restoreRandomBusy?"- Retry Random":"- Restore Random",MenuItemType::Action}};
     List_Show(menu, M_LIGHT_MAIN);
 }
 
@@ -84,6 +87,9 @@ void OledUI::Light_Main_Proc()
             case 3:
                 NavigateTo(M_LIGHT_EFFECT);
                 break;
+            case 4:
+                restoreRandomBusy=!PaintBridge::SelectLocalEffect(0,true);
+                break;
             }
             break;
         }
@@ -92,6 +98,7 @@ void OledUI::Light_Main_Proc()
 
 void OledUI::Light_Bri_Show()
 {
+    LightingState::Snapshot state;if(LightingState::Read(state))light_brightness=state.settings[2];
     u8g2.setFont(LIST_FONT);
     u8g2.drawStr(8,13,"Light brightness");
     char value[12];std::snprintf(value,sizeof(value),"%u%%",light_brightness);

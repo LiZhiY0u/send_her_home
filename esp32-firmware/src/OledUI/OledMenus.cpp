@@ -238,6 +238,7 @@ const M_SELECT light_main_menu[] = {
     {"- Brightness", MenuItemType::Action},    // 1 (入口将在硬件控制接通后启用)
     {"- Color", MenuItemType::Action},         // 2 (入口将在硬件控制接通后启用)
     {"- Effect", MenuItemType::Action},        // 3 (入口将在硬件控制接通后启用)
+    {"- Restore Random", MenuItemType::Action},
 };
 const uint8_t light_main_menu_count = sizeof(light_main_menu) / sizeof(M_SELECT);
 

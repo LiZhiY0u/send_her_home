@@ -4,6 +4,7 @@
 #include "HAL/HAL.h"
 #include "Input/InputQueue.h"
 #include "Bluetooth/BluetoothService.h"
+#include "Lighting/DeviceState.h"
 
 namespace {
 enum class State { NotStarted, Failed, Ready };
@@ -14,6 +15,9 @@ bool App::Init()
     if (state != State::NotStarted) return state == State::Ready;
     state = State::Failed; // Partial initialization must not be retried implicitly.
     HAL::Init();
+    // Initialize shared storage before Bluetooth and application tasks can read it.
+    LightingState::Snapshot initialLighting;
+    LightingState::Read(initialLighting);
     if (!InputQueue::Init()) {
         Serial.println("Input queue initialization failed; application not started");
         return false;

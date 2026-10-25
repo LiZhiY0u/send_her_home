@@ -17,9 +17,10 @@ int main() {
         assert(e==0 || changed);
     }
     assert(PlaylistEffect(0)==Effect::WaveX);
-    assert(PlaylistEffect(600)==Effect::WaveDiagonal);
-    assert(PlaylistEffect(7200)==Effect::Inward);
-    assert(PlaylistEffect(12000)==Effect::WaveX);
+    static_assert(FrameMs*FramesPerEffect==6000,"Automatic effect duration must be six seconds");
+    assert(PlaylistEffect(FramesPerEffect)==Effect::WaveDiagonal);
+    assert(PlaylistEffect(12*FramesPerEffect)==Effect::Inward);
+    assert(PlaylistEffect(PlaylistCount*FramesPerEffect)==Effect::WaveX);
     const float a=Strength(Effect::WaveX,45,25,1.3f);
     assert(std::fabs(a-Strength(Effect::WaveX,45,25,1.8f,true,Link::Delay))<.00001f);
     assert(std::fabs(a-Strength(Effect::WaveX,45,25,1.3f,true,Link::Mirror))>.01f);
