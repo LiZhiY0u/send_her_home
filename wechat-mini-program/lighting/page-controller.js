@@ -21,6 +21,7 @@ function createLightingPage(deps) {
     data: {
       error: '', ready: false, playing: true, layer: 'both', region: 'all', effect: 'rotate',
       deviceBusy:false,deviceLinked:false,deviceStatus:'预览不会自动控制设备',
+      randomColor:false,
       color: '#57d9ff', brightness: 65, speed: 50, linkedMode: 'sync',
       layers: [{ value: 'both', label: '上下联动' }, { value: 'top', label: '顶部' }, { value: 'bottom', label: '底部' }],
       regions: [{ value: 'all', label: '全部' }, { value: 'CENTER', label: '中心' }, { value: 'corners', label: '四角' },
@@ -89,7 +90,7 @@ function createLightingPage(deps) {
       const { field, value } = event.currentTarget.dataset
       if (!choices[field] || !choices[field].includes(value)) return
       if(field === 'effect') this._paintFrame = null
-      this.setData({ [field]: value }); this.redraw()
+      this.setData({ [field]: value,...(field==='color'?{randomColor:false}:{}) }); this.redraw()
       if(this.data.deviceLinked&&['effect','color'].includes(field))this.applyDeviceEffect()
     },
     slider(event) {
@@ -99,6 +100,10 @@ function createLightingPage(deps) {
       if (!Number.isFinite(value)) return
       this.setData({ [field]: Math.max(0, Math.min(100, value)) }); this.redraw()
       if(this.data.deviceLinked&&event.type!=='changing')this.applyDeviceEffect()
+    },
+    toggleRandomColor(event){
+      this.setData({randomColor:!!event.detail.value});this.redraw()
+      if(this.data.deviceLinked)this.applyDeviceEffect()
     },
     togglePlayback() {
       this.setData({ playing: !this.data.playing })

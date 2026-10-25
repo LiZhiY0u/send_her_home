@@ -9,4 +9,8 @@ int main(){
  assert(r.Accept(p,14,0)==2);p[4]=2;p[8]=21;assert(r.Accept(p,14,0)==0);
  p[4]=3;p[8]=22;assert(r.Accept(p,14,0)==1);
  p[8]=5;p[9]=101;assert(r.Accept(p,14,0)==1);
+ uint8_t random[]={0xa7,1,6,7,4,0,0,0,5,50,65,255,0,0,1};
+ assert(r.Accept(random,15,0)==0);assert(r.EffectSettings()[6]==1);r.ClearReady();
+ random[4]=5;random[14]=2;assert(r.Accept(random,15,0)==1);
+ random[14]=0;assert(r.Accept(random,14,0)==0);assert(r.EffectSettings()[6]==0);
 }

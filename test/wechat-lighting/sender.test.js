@@ -35,6 +35,13 @@ test('effect sends stable ID and parameters and waits for firmware application A
  assert(!states.includes('底面灯效已应用'));listener(statusFor(effectPacket));await promise
  assert(states.includes('底面灯效已应用'))
 })
+test('random color effect appends mode flag to the BLE command',async()=>{
+ let listener,packet
+ const connection={enablePainting:async()=>{},onStatus:f=>{listener=f;return()=>{}},write:async(uuid,p)=>{if(p[2]===6)packet=p;listener(statusFor(p))}}
+ const sender=createPaintSender(connection,()=>{},{timeout:100})
+ await sender.applyEffect({effect:'waveX',speed:50,brightness:65,color:'#ff0000',randomColor:true})
+ assert.equal(packet.length,15);assert.equal(packet[14],1)
+})
 test('device busy is retried once with a fresh frame sequence',async()=>{
   let listener,commits=0;const states=[]
   const connection={enablePainting:async()=>{},onStatus:f=>{listener=f;return()=>{listener=null}},write:async(uuid,packet)=>{

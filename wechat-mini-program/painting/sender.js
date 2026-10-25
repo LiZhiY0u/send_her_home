@@ -76,6 +76,7 @@ function createPaintSender(connection,onState,options={}) {
       const percent=v=>Math.max(0,Math.min(100,Math.round(Number(v)||0)))
       const color=settings.color.slice(1)
       const payload=[id,percent(settings.speed),percent(settings.brightness),... [0,2,4].map(i=>parseInt(color.slice(i,i+2),16))]
+      if(settings.randomColor)payload.push(1)
       api.stop();if(running)await running
       const t=token;lastError=null;listen()
       try{

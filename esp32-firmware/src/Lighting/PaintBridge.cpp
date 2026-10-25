@@ -62,7 +62,7 @@ int PaintBridge::Write(uint16_t handle,uint16_t attribute,uint16_t transaction,u
     if(receiver.Ready()||receiver.AutoRequested()||receiver.EffectRequested()) {
         Command command{};command.session=receiver.Session();command.sequence=receiver.Sequence();command.automatic=receiver.AutoRequested();
         command.effect=receiver.EffectRequested();
-        if(command.effect)std::memcpy(command.settings,receiver.EffectSettings(),6);
+        if(command.effect)std::memcpy(command.settings,receiver.EffectSettings(),7);
         else if(!command.automatic)std::memcpy(command.pixels,receiver.Pixels(),399);
         if(xQueueSend(commands,&command,0)!=pdTRUE)Status(3,op,command.session,command.sequence);
         receiver.ClearReady();
@@ -79,6 +79,24 @@ void PaintBridge::CanSend() {
     if(phone!=0xffff&&subscribed&&notifyPending&&att_server_notify(phone,StatusHandle,status,16)==0)notifyPending=false;
 }
 bool PaintBridge::Read(Command& command) {return commands&&xQueueReceive(commands,&command,0)==pdTRUE;}
+bool PaintBridge::SelectLocalEffect(uint8_t effect,bool automatic) {
+    if(!commands||effect>=22)return false;
+    Command command{};command.automatic=automatic;command.effect=!automatic;
+    const uint8_t settings[6]={effect,50,65,0x57,0xd9,0xff};
+    std::memcpy(command.settings,settings,6);
+    return xQueueSend(commands,&command,0)==pdTRUE;
+}
+bool PaintBridge::SetLocalRandomColor(bool enabled){
+    if(!commands)return false;
+    Command command{};command.colorModeOnly=true;command.settings[6]=enabled?1:0;
+    return xQueueSend(commands,&command,0)==pdTRUE;
+}
+bool PaintBridge::SetLocalBrightness(uint8_t percent){
+    if(!commands||percent>100)return false;
+    Command command{};command.brightnessOnly=true;command.settings[2]=percent;
+    return xQueueSend(commands,&command,0)==pdTRUE;
+}
 void PaintBridge::Applied(const Command& command) {
+    if(command.session==0)return;
     if(acks){const Ack ack={command.session,command.sequence,command.automatic,command.effect};xQueueOverwrite(acks,&ack);}
 }

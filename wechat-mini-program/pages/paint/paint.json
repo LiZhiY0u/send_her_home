@@ -3,5 +3,6 @@
   "navigationBarBackgroundColor": "#f7f8fa",
   "navigationBarTextStyle": "black",
   "backgroundColor": "#f7f8fa",
-  "disableScroll": false
+  "disableScroll": false,
+  "pageOrientation": "auto"
 }

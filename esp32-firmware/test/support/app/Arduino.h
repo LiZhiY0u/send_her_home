@@ -9,6 +9,7 @@ constexpr int pdPASS = 1;
 struct SerialFake { void println(const char*) {} void print(const char*) {} };
 extern SerialFake Serial;
 int analogRead(int);
+inline uint32_t millis(){return 0;}
 void vTaskDelay(unsigned);
 void vTaskDelete(TaskHandle_t);
 BaseType_t xTaskCreatePinnedToCore(TaskFunction_t, const char*, uint32_t, void*, unsigned, TaskHandle_t*, int);

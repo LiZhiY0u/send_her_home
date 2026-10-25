@@ -234,7 +234,7 @@ const uint8_t main_icon_count = sizeof(main_icon_pic) / 120;
 
 // 灯带主菜单
 const M_SELECT light_main_menu[] = {
-    {"[ Light - WIP ]", MenuItemType::Back}, // 0
+    {"[ Light ]", MenuItemType::Back}, // 0
     {"- Brightness", MenuItemType::Action},    // 1 (入口将在硬件控制接通后启用)
     {"- Color", MenuItemType::Action},         // 2 (入口将在硬件控制接通后启用)
     {"- Effect", MenuItemType::Action},        // 3 (入口将在硬件控制接通后启用)
@@ -268,12 +268,28 @@ const uint8_t light_color_menu_count = sizeof(light_color_menu) / sizeof(M_SELEC
 extern const char* light_effect_name[];  // 效果名称数组指针，由用户实现
 const M_SELECT light_effect_menu[] = {
     {"[ Effect ]", MenuItemType::Back},
-    {"= Static", MenuItemType::Choice, 1},        // 0  静态单色
-    {"= Breath", MenuItemType::Choice, 2},        // 1  呼吸效果
-    {"= Rainbow", MenuItemType::Choice, 3},       // 2  彩虹流水
-    {"= Wave", MenuItemType::Choice, 4},          // 3  波浪效果
-    {"= Strobe", MenuItemType::Choice, 5},        // 4  频闪效果
-    {"= Comet", MenuItemType::Choice, 6},         // 5  彗星拖尾
-    {"= Sparkle", MenuItemType::Choice, 7},        // 6  闪烁星点
+    {"- Auto Playlist", MenuItemType::Action},
+    {"- Solid", MenuItemType::Action},
+    {"- Rotate Line", MenuItemType::Action},
+    {"- Ripple Out", MenuItemType::Action},
+    {"- Wave X", MenuItemType::Action},
+    {"- Wave Diagonal", MenuItemType::Action},
+    {"- Sine Band", MenuItemType::Action},
+    {"- Ocean", MenuItemType::Action},
+    {"- Square Move", MenuItemType::Action},
+    {"- Square Expand", MenuItemType::Action},
+    {"- Square Rotate", MenuItemType::Action},
+    {"- Radar", MenuItemType::Action},
+    {"- Spiral", MenuItemType::Action},
+    {"- Corner Relay", MenuItemType::Action},
+    {"- Aurora", MenuItemType::Action},
+    {"- Ripple In", MenuItemType::Action},
+    {"- Collision", MenuItemType::Action},
+    {"- Offcenter Ring", MenuItemType::Action},
+    {"- Diamond", MenuItemType::Action},
+    {"- Bounce", MenuItemType::Action},
+    {"- Windmill", MenuItemType::Action},
+    {"- Petals", MenuItemType::Action},
+    {"- Diagonal Pulse", MenuItemType::Action},
 };
 const uint8_t light_effect_menu_count = sizeof(light_effect_menu) / sizeof(M_SELECT);

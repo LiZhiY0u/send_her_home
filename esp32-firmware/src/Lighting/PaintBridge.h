@@ -1,8 +1,11 @@
 #pragma once
 #include <cstdint>
 namespace PaintBridge {
-struct Command { uint8_t session; uint16_t sequence; bool automatic; uint8_t pixels[399]; bool effect=false; uint8_t settings[6]={}; };
+struct Command { uint8_t session; uint16_t sequence; bool automatic; uint8_t pixels[399]; bool effect=false; uint8_t settings[7]={}; bool colorModeOnly=false; bool brightnessOnly=false; };
 bool Init();
+bool SelectLocalEffect(uint8_t effect,bool automatic=false);
+bool SetLocalRandomColor(bool enabled);
+bool SetLocalBrightness(uint8_t percent);
 void Connect(uint16_t handle);
 void Disconnect(uint16_t handle);
 int Write(uint16_t handle,uint16_t attribute,uint16_t transaction,uint16_t offset,uint8_t* data,uint16_t size);

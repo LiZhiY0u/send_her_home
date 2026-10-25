@@ -11,11 +11,14 @@ Page({
     this.alive=true;this.frame=getDraft().frame
     this.sender=createPaintSender(connection,status=>{if(this.alive)this.setData({status})})
   },
-  onReady(){
+  onReady(){this.resizeBoard()},
+  onResize(){this.previous=null;this.rect=null;wx.nextTick(()=>{if(this.alive)this.resizeBoard()})},
+  resizeBoard(){
+    const generation=this.resizeGeneration=(this.resizeGeneration||0)+1
     wx.createSelectorQuery().select('#paint-board').fields({node:true,size:true,rect:true}).exec(result=>{
-      if(!this.alive)return
+      if(!this.alive||generation!==this.resizeGeneration)return
       try{
-        const item=result[0];if(!item||!item.node)throw new Error('Canvas 2D 不可用')
+        const item=result[0];if(!item||!item.node||!(item.width>0&&item.height>0))throw new Error('Canvas 2D 不可用')
         this.canvas=item.node;this.context=this.canvas.getContext('2d');this.rect=item
         const ratio=Math.min(2,(wx.getWindowInfo?wx.getWindowInfo():wx.getSystemInfoSync()).pixelRatio||1)
         this.canvas.width=item.width*ratio;this.canvas.height=item.height*ratio

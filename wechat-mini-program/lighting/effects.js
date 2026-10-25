@@ -1,4 +1,5 @@
 const finite = (value, fallback) => Number.isFinite(value) ? value : fallback
+const {cycleColor}=require('./random-color')
 const clamp = (value, min, max) => Math.max(min, Math.min(max, value))
 const EFFECTS = [
   ['solid','常亮'], ['rotate','旋转光线'], ['ripple','圆形扩散'],
@@ -81,6 +82,8 @@ function sampleEffect(point, settings, elapsedSeconds) {
     strength = spatialStrength(point, settings, time, speed)
   }
   const hex = /^#[0-9a-f]{6}$/i.test(settings.color) ? settings.color.slice(1) : '57d9ff'
-  return [0, 2, 4].map(i => parseInt(hex.slice(i, i + 2), 16) / 255 * brightness * strength)
+  const base=[0,2,4].map(i=>parseInt(hex.slice(i,i+2),16))
+  const rgb=settings.randomColor?cycleColor(time,base):base
+  return rgb.map(v=>v/255*brightness*strength)
 }
 module.exports = { sampleEffect, selected, EFFECTS, LINK_MODES }

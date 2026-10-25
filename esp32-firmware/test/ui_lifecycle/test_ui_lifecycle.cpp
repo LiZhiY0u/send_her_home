@@ -4,6 +4,7 @@
 #include "Bluetooth/ConnectionEvents.h"
 #include "DRV8837.h"
 #include "OledUI/UiPages/UiPages.h"
+#include "Lighting/PaintBridge.h"
 Motor motor;
 uint32_t test_now=0;SerialFake Serial;
 U8G2_SH1106_128X64_NONAME_F_HW_I2C u8g2;
@@ -21,6 +22,23 @@ namespace ConnectionEvents { bool Read(Event&){return false;} }
 namespace ENCODER { int16_t Encoder_GetDiff(){return 0;} }
 int main() {
     OledUI::Init();
+    assert(light_effect_menu_count==24);
+    OledUI::OpenRoot(M_LIGHT_MAIN);ui.select[0]=3;btn.id=BTN_ID_SP;btn.pressed=true;
+    OledUI::Light_Main_Proc();OledUI::Layer_Init_In();assert(ui.index==M_LIGHT_EFFECT);
+    for(unsigned row=2;row<24;++row){
+        ui.select[ui.layer]=row;btn.id=BTN_ID_SP;btn.pressed=true;
+        OledUI::Light_Effect_Proc();assert(PaintBridge::LocalTest().effect==row-2);
+        assert(!PaintBridge::LocalTest().automatic);
+    }
+    ui.select[ui.layer]=1;btn.pressed=true;OledUI::Light_Effect_Proc();assert(PaintBridge::LocalTest().automatic);
+    OledUI::OpenRoot(M_MAIN);
+    OledUI::OpenRoot(M_LIGHT_MAIN);ui.select[0]=1;btn.id=BTN_ID_SP;btn.pressed=true;
+    OledUI::Light_Main_Proc();OledUI::Layer_Init_In();assert(ui.index==M_LIGHT_BRI);
+    btn.id=BTN_ID_CC;btn.pressed=true;OledUI::Light_Bri_Proc();assert(PaintBridge::BrightnessTest()==95);
+    for(int i=0;i<30;++i){btn.pressed=true;OledUI::Light_Bri_Proc();}
+    assert(PaintBridge::BrightnessTest()==0);
+    btn.id=BTN_ID_CW;btn.pressed=true;OledUI::Light_Bri_Proc();assert(PaintBridge::BrightnessTest()==5);
+    OledUI::OpenRoot(M_MAIN);
     assert(ui.index==M_MAIN && ui.layer==0 && ui.state==S_NONE && tile.icon_x_trg==36);
     ui.select[0]=3;
     assert(OledUI::NavigateTo(M_SETTING));OledUI::Layer_Init_In();

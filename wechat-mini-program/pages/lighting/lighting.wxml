@@ -14,6 +14,7 @@
   <view class="device-control"><button loading="{{deviceBusy}}" disabled="{{deviceBusy}}" bindtap="applyDeviceEffect">应用到底面灯板</button><view>{{deviceStatus}}</view><view>仅发送灯效、颜色、速度和亮度；区域与上下联动仍仅预览。实物亮度受约10%上限保护。</view></view>
   <navigator url="/pages/paint/paint" class="paint-entry">在底面上作画 ↗</navigator>
   <view class="panel">
+    <view class="range-label"><text>随机颜色 · 每5秒渐变</text><switch checked="{{randomColor}}" color="#8b70df" bindchange="toggleRandomColor" /></view>
     <view class="section-label">01 <text>选择灯层</text></view>
     <view class="choices"><button wx:for="{{layers}}" wx:key="value" class="chip {{layer === item.value ? 'active' : ''}}" data-field="layer" data-value="{{item.value}}" bindtap="choose">{{item.label}}</button></view>
     <view class="section-label">02 <text>选择区域</text></view>

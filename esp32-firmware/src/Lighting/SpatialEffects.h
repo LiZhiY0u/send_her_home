@@ -86,14 +86,14 @@ inline Effect PlaylistEffect(unsigned frame) {
         Effect::Bounce,Effect::Windmill,Effect::Petals,Effect::DiagonalBreathe};
     return effects[(frame/FramesPerEffect)%PlaylistCount];
 }
-template<class Strip> void DrawPlaylist(Strip& strip,unsigned frame) {
+template<class Strip> void DrawPlaylist(Strip& strip,unsigned frame,uint32_t overrideColor=0) {
     static const uint32_t colors[]={0x57d9ff,0xa78bfa,0xff7096,0x55cbb8,0x57d9ff,0xffc46b,
         0xa78bfa,0xff7096,0x66e3a4,0xa78bfa,0xffc46b,0x66e3a4};
     const unsigned index=(frame/FramesPerEffect)%12; // Cycle the palette independently of effects.
     const float seconds=(frame%FramesPerEffect)*FrameMs/1000.f;
     for(unsigned i=0;i<LedPhysicalMap::Count;++i) {
         const auto p=LedPhysicalMap::Get(i);
-        strip.setPixelColor(i,ColorAt(PlaylistEffect(frame),p.x,p.y,seconds,colors[index]));
+        strip.setPixelColor(i,ColorAt(PlaylistEffect(frame),p.x,p.y,seconds,overrideColor?overrideColor:colors[index]));
     }
     strip.show();
 }
