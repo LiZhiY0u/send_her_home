@@ -1,7 +1,7 @@
 <view class="page">
   <view class="drawing-pane">
   <view class="paint-heading">
-  <view class="title">？！画画！？</view>
+  <view class="title">画画</view>
   <view class="status">{{status}}</view>
   </view>
   <view class="board"><canvas hidden="{{colorPickerVisible}}" type="2d" id="paint-board" class="canvas" catchtouchstart="touchStart" catchtouchmove="touchMove" bindtouchend="touchEnd" bindtouchcancel="touchEnd"></canvas><view wx:if="{{error}}">{{error}}</view></view>

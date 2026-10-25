@@ -1,6 +1,6 @@
 <view class="lab">
   <view class="preview-pane">
-  <view class="intro"><view class="heading">？！灯灯！？</view></view>
+  <view class="intro"><view class="heading">灯效</view></view>
   <view class="stage">
     <canvas hidden="{{colorPickerVisible}}" type="webgl" id="light-scene" class="canvas" catchtouchstart="touchStart" catchtouchmove="touchMove" bindtouchend="touchEnd" bindtouchcancel="touchEnd" bindtap="tapScene"></canvas>
     <view class="error" wx:if="{{error}}"><text>{{error}}</text><navigator open-type="navigateBack" class="back-link">返回遥控器</navigator></view>

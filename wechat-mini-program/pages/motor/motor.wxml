@@ -1,5 +1,5 @@
 <view class="motor-page">
- <view class="motor-header"><view class="title">？！转转！？</view><view class="subtitle">{{message}}</view></view>
+ <view class="motor-header"><view class="title">转转</view><view class="subtitle">{{message}}</view></view>
  <view class="motor-grid">
   <view class="drive-card">
    <view class="state-tag {{running ? 'active' : ''}}">{{!ready ? '状态待确认' : (running ? '运行中' : '已停止')}}</view>

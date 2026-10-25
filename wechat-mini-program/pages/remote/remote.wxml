@@ -62,9 +62,9 @@
   </view>
   <scroll-view class="home-features" scroll-y enhanced show-scrollbar="{{false}}">
   <view class="feature-grid">
-    <navigator url="/pages/lighting/lighting" class="feature-card preview-card"><view class="feature-art orbit-art"><view></view><view></view><view></view></view><view class="feature-title">？！灯灯！？ ↗</view></navigator>
-    <navigator url="/pages/paint/paint" class="feature-card paint-card"><view class="feature-art paint-art">✦</view><view class="feature-title">？！画画！？ ↗</view></navigator>
-    <navigator url="/pages/motor/motor" class="feature-card motor-card"><view class="feature-art motor-art"><view class="motor-ring"></view><view class="motor-axis"></view></view><view class="feature-title">？！转转！？ ↗</view></navigator>
+    <navigator url="/pages/lighting/lighting" class="feature-card preview-card"><view class="feature-art orbit-art"><view></view><view></view><view></view></view><view class="feature-title">灯效 ↗</view></navigator>
+    <navigator url="/pages/paint/paint" class="feature-card paint-card"><view class="feature-art paint-art">✦</view><view class="feature-title">画画 ↗</view></navigator>
+    <navigator url="/pages/motor/motor" class="feature-card motor-card"><view class="feature-art motor-art"><view class="motor-ring"></view><view class="motor-axis"></view></view><view class="feature-title">转转 ↗</view></navigator>
     <navigator url="/pages/creator/creator" class="feature-card creator-card"><view class="feature-art creator-art"><view class="mini-avatar-rim"><image src="/assets/creator-avatar.jpg" mode="aspectFill" class="mini-avatar" /></view></view><view class="feature-title">😴 ↗</view></navigator>
   </view>
   <view class="hint">
