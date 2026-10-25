@@ -7,6 +7,7 @@
 static ButtonEvent EncoderPush(3000);
 static StartupReleaseGuard EncoderStartupRelease;
 static bool wakePress=false;
+static uint32_t encoderEpoch=0;
 
 static bool EncoderEnable = true;        // encoder使能
 static volatile int16_t EncoderDiff = 0; // encoder脉冲，用一次就清零
@@ -59,7 +60,7 @@ static void Encoder_PushHandler(ButtonEvent *btn, int event)
     }
     else if (event == ButtonEvent::EVENT_PRESSED)
     {
-        wakePress=WakeGate::Wake();
+        bool first=false;WakeGate::WakeIfEpoch(encoderEpoch,&first);wakePress=first;
         // Serial.printf("EVENT_PRESSED");
     }
     else if (event == ButtonEvent::EVENT_PRESSING)
@@ -80,7 +81,7 @@ static void Encoder_PushHandler(ButtonEvent *btn, int event)
         // Serial.printf("EVENT_SHORT_CLICKED");
         // key_msg.id = 2;
         // key_msg.pressed = true;
-        InputQueue::Push({UserInput::Action::Confirm, UserInput::Source::Encoder, millis()});
+        InputQueue::Push({UserInput::Action::Confirm, UserInput::Source::Encoder, millis()},encoderEpoch);
     }
     else if (event == ButtonEvent::EVENT_DOUBLE_CLICKED)
     {
@@ -105,10 +106,16 @@ void ENCODER::Encoder_Init()
 
     EncoderPush.EventAttach(Encoder_PushHandler);
     EncoderStartupRelease = StartupReleaseGuard{};
+    encoderEpoch=WakeGate::Epoch();
 }
 
 void ENCODER::Encoder_Update()
 {
+    if(encoderEpoch!=WakeGate::Epoch()){
+        encoderEpoch=WakeGate::Epoch();EncoderDiff=0;wakePress=false;
+        EncoderStartupRelease=StartupReleaseGuard{};
+        EncoderPush=ButtonEvent(3000);EncoderPush.EventAttach(Encoder_PushHandler);
+    }
     const bool pressed = Encoder_GetIsPush();
     if (EncoderStartupRelease.Accept(pressed, millis()))
         EncoderPush.EventMonitor(pressed);

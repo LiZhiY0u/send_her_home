@@ -5,6 +5,10 @@ using UserInput::Action;
 
 Action GamepadInput::State::Update(const Report& report, uint32_t now_ms)
 {
+    if(releaseRequired_){
+        if(!report.buttons&&!report.dpad&&report.x>=-InputConfig::StickRelease&&report.x<=InputConfig::StickRelease&&report.y>=-InputConfig::StickRelease&&report.y<=InputConfig::StickRelease)releaseRequired_=false;
+        return Action::None;
+    }
     const bool a_down = (report.buttons & 0x01) != 0;
     const bool confirm = a_down && !a_down_;
     a_down_ = a_down;

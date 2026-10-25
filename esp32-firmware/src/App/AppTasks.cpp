@@ -55,7 +55,22 @@ void Lighting(void*) {
     AutoColor::State automaticColors(millis()^0x85ebca6bu);
     unsigned automaticEffect=0;
     uint32_t shownColor=randomBase;
+    uint32_t resetEpoch=WakeGate::Epoch();
     for (;;) {
+        if(resetEpoch!=WakeGate::Epoch()){
+            resetEpoch=WakeGate::Epoch();
+            painting=selectedEffect=autoStarted=false;step=0;effectStart=autoStart=colorStart=0;
+            randomColor=true;randomBase=shownColor=0x57d9ff;outputBrightness=100;automaticEffect=0;
+            startup=StartupSequence::State{};randomEffects=RandomEffect::State(millis());automaticColors=AutoColor::State(millis()^0x85ebca6bu);
+            LightingState::Snapshot defaults;
+            for(unsigned i=0;i<10;++i)effectSettings[i]=defaults.settings[i];
+            for(auto& pixel:paintedPixels)pixel=0;
+            command={};testStrip.setBrightness(LedStripTest::Brightness);testStrip.clear();testStrip.show();
+            LightingState::Publish(defaults);
+        }
+        const bool haveCommand=PaintBridge::Read(command);
+        if(haveCommand&&!WakeGate::WakeIfEpoch(command.epoch))continue;
+        if(resetEpoch!=WakeGate::Epoch())continue;
         if(!WakeGate::Awake()){vTaskDelay(pdMS_TO_TICKS(10));continue;}
         LightingState::Snapshot snapshot;
         snapshot.mode=painting?4:(selectedEffect?3:(autoStarted?2:1));
@@ -68,7 +83,7 @@ void Lighting(void*) {
         }
         snapshot.elapsed=static_cast<uint16_t>((millis()-(selectedEffect?effectStart:autoStart))/10);
         LightingState::Publish(snapshot);
-        if(PaintBridge::Read(command)) {
+        if(haveCommand) {
             // An explicit user command takes priority and must receive its ACK promptly.
             startup.Finish();
             if(command.brightnessOnly){

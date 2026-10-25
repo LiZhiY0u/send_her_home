@@ -1,6 +1,7 @@
 #include <cassert>
 #include "freertos/queue.h"
 #include "Input/InputQueue.h"
+#include "App/WakeGate.h"
 namespace QueueFake {
 bool fail_create = false;
 Queue queue;
@@ -30,4 +31,9 @@ int main()
     assert(!InputQueue::Read(event));
     assert(InputQueue::Push({UserInput::Action::Next, UserInput::Source::Serial, 42}));
     assert(InputQueue::Read(event) && event.time_ms == 42);
+    assert(InputQueue::Push({UserInput::Action::Confirm,UserInput::Source::Gamepad,50}));
+    const auto oldEpoch=WakeGate::Epoch();WakeGate::Reset();assert(!InputQueue::Read(event));
+    assert(!InputQueue::Push({UserInput::Action::Confirm,UserInput::Source::Gamepad,55},oldEpoch));
+    assert(InputQueue::Push({UserInput::Action::Next,UserInput::Source::Encoder,60}));
+    assert(InputQueue::Read(event)&&event.time_ms==60);
 }

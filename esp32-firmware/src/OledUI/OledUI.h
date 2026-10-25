@@ -1,2 +1,2 @@
 #pragma once
-namespace OledUI { void Init(); void Task(); }
+namespace OledUI { void Init(); void Task(); void ResetStandby(); }

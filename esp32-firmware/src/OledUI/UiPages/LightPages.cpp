@@ -1,4 +1,5 @@
 #include "../UiContext.h"
+#include "../OledUI.h"
 #include "UiPages.h"
 #include "../MainPageState.h"
 #include "../UiNavigation.h"
@@ -53,7 +54,8 @@ void OledUI::Light_Main_Show()
         {"- Brightness",MenuItemType::Action},
         {localRandomColor?"- Random Color ON":"- Random Color OFF",MenuItemType::Action},
         {"- Effect",MenuItemType::Action},
-        {restoreRandomBusy?"- Retry Random":"- Restore Random",MenuItemType::Action}};
+        {restoreRandomBusy?"- Retry Random":"- Restore Random",MenuItemType::Action},
+        {"- Reset Standby",MenuItemType::Action}};
     List_Show(menu, M_LIGHT_MAIN);
 }
 
@@ -89,6 +91,9 @@ void OledUI::Light_Main_Proc()
                 break;
             case 4:
                 restoreRandomBusy=!PaintBridge::SelectLocalEffect(0,true);
+                break;
+            case 5:
+                restoreRandomBusy=false;OledUI::ResetStandby();
                 break;
             }
             break;

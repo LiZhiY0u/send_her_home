@@ -55,6 +55,13 @@ void OledUI::UI_Init()
 
 static void ui_proc();
 
+void OledUI::ResetStandby(){
+    WakeGate::Reset();
+    OpenRoot(M_MAIN);
+    btn.pressed=false;
+    OledDriver::ClearBuffer();OledDriver::SendBuffer();
+}
+
 void OledUI::Task()
 {
     Key_Scan();

@@ -35,4 +35,13 @@ int main(){
     RandomEffect::State random(123);unsigned previous=0;bool seen[SpatialEffects::Count]={};
     for(unsigned i=0;i<1000;++i){const auto effect=random.Next();assert(effect>0&&effect<SpatialEffects::Count);assert(effect!=previous);seen[effect]=true;previous=effect;}
     for(unsigned i=1;i<SpatialEffects::Count;++i)assert(seen[i]);
+    const auto epoch=WakeGate::Epoch();WakeGate::Reset();
+    assert(!WakeGate::Awake()&&WakeGate::Epoch()==epoch+1);
+    assert(!WakeGate::WakeIfEpoch(epoch));assert(!WakeGate::Awake());
+    bool first=false;assert(WakeGate::WakeIfEpoch(epoch+1,&first)&&first);
+    assert(WakeGate::WakeIfEpoch(epoch+1,&first)&&!first);
+    WakeGate::Reset();assert(!WakeGate::Awake());
+    assert(WakeGate::Wake());assert(!WakeGate::Wake());
+    state=StartupSequence::State{};assert(state.Active(true,30000));
+    assert(state.Strength(0,0,30000)==1&&state.Strength(100,100,30000)==0);
 }

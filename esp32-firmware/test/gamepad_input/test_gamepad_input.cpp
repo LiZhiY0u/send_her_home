@@ -83,6 +83,11 @@ int main()
 {
     confirm_edges();
     back_edges();
+    State rearmed;rearmed.RequireRelease();
+    assert(rearmed.Update({1,1,0,-512},0)==Action::None);
+    assert(rearmed.Tick(1000)==Action::None);
+    assert(rearmed.Update({0,0,0,0},1010)==Action::None);
+    assert(rearmed.Update({1,0,0,0},1020)==Action::Confirm);
     repeat_timing(100);
     repeat_timing(UINT32_MAX - 200u);
     directions_and_priority();

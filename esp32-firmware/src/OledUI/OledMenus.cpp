@@ -239,6 +239,7 @@ const M_SELECT light_main_menu[] = {
     {"- Random Color", MenuItemType::Action},
     {"- Effect", MenuItemType::Action},
     {"- Restore Random", MenuItemType::Action},
+    {"- Reset Standby", MenuItemType::Action},
 };
 const uint8_t light_main_menu_count = sizeof(light_main_menu) / sizeof(M_SELECT);
 

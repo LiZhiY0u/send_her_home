@@ -6,12 +6,14 @@
 #include "Input/GamepadInput.h"
 #include "Input/InputQueue.h"
 #include "Diagnostics/GamepadLogger.h"
+#include "App/WakeGate.h"
 
 namespace {
 struct Slot {
     ControllerPtr controller = nullptr;
     bool notified = false;
     GamepadInput::State input;
+    uint32_t epoch=0;
 };
 Slot slots[BP32_MAX_GAMEPADS];
 
@@ -21,10 +23,10 @@ bool IsTarget(ControllerPtr controller)
     return BluetoothConfig::IsAllowedGamepad(properties.btaddr);
 }
 
-void Submit(UserInput::Action action, uint32_t now_ms)
+void Submit(UserInput::Action action, uint32_t now_ms,uint32_t epoch)
 {
     if (action != UserInput::Action::None)
-        InputQueue::Push({action, UserInput::Source::Gamepad, now_ms});
+        InputQueue::Push({action, UserInput::Source::Gamepad, now_ms},epoch);
 }
 
 void OnConnected(ControllerPtr controller)
@@ -38,6 +40,7 @@ void OnConnected(ControllerPtr controller)
         if (slot.controller != nullptr) continue;
         slot.controller = controller;
         slot.input.Reset();
+        slot.epoch=WakeGate::Epoch();
         slot.notified = controller->isGamepad();
         GamepadLogger::Reset(i);
         if (slot.notified) ConnectionEvents::Push(ConnectionEvents::Event::GamepadConnected);
@@ -81,6 +84,7 @@ void GamepadController::Update()
         Slot& slot = slots[i];
         ControllerPtr controller = slot.controller;
         if (controller == nullptr || !controller->isConnected() || !controller->isGamepad()) continue;
+        if(slot.epoch!=WakeGate::Epoch()){slot.epoch=WakeGate::Epoch();slot.input.RequireRelease();}
         // Classification can arrive after the first connection callback.
         if (!slot.notified) {
             if (!IsTarget(controller)) { controller->disconnect(); continue; }
@@ -95,6 +99,6 @@ void GamepadController::Update()
         }
         // At most one event per controller per iteration, even on A + direction.
         if (action == UserInput::Action::None) action = slot.input.Tick(now_ms);
-        Submit(action, now_ms);
+        Submit(action, now_ms,slot.epoch);
     }
 }

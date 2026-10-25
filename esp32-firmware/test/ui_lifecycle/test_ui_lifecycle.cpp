@@ -10,9 +10,9 @@
 Motor motor;
 uint32_t test_now=0;SerialFake Serial;
 U8G2_SH1106_128X64_NONAME_F_HW_I2C u8g2;
-namespace { uint8_t buffer[1024]={}; }
+namespace { uint8_t buffer[1024]={};unsigned displaySends=0,displayClears=0; }
 namespace OledDriver {
-void Init(){} void SendBuffer(){} void ClearBuffer(){}
+void Init(){} void SendBuffer(){++displaySends;} void ClearBuffer(){++displayClears;}
 void SetContrast(uint8_t){}
 uint8_t* GetBufferPtr(){return buffer;} uint16_t GetBufferLen(){return 1024;}
 }
@@ -25,7 +25,7 @@ namespace ENCODER { int16_t Encoder_GetDiff(){return 0;} }
 int main() {
     WakeGate::Wake();
     OledUI::Init();
-    assert(light_main_menu_count==5);
+    assert(light_main_menu_count==6);
     OledUI::OpenRoot(M_LIGHT_MAIN);ui.select[0]=4;btn.id=BTN_ID_SP;btn.pressed=true;
     OledUI::Light_Main_Proc();assert(PaintBridge::LocalTest().automatic);assert(ui.index==M_LIGHT_MAIN);
     PaintBridge::LocalTest().accept=false;btn.pressed=true;
@@ -100,4 +100,13 @@ int main() {
     btn.id=BTN_ID_SP;btn.pressed=true;UiPages::MotorSpeedProcess();
     assert(MotorService::State().remote);OledUI::Layer_Init_Out();
     assert(OledUI::Back());assert(motor.duty!=0);
+    OledUI::OpenRoot(M_LIGHT_MAIN);ui.select[0]=5;btn.id=BTN_ID_SP;btn.pressed=true;
+    const unsigned sends=displaySends,clears=displayClears;const auto epoch=WakeGate::Epoch();
+    OledUI::Light_Main_Proc();
+    assert(!WakeGate::Awake()&&WakeGate::Epoch()==epoch+1);
+    assert(ui.index==M_MAIN&&ui.layer==0&&!btn.pressed);
+    assert(displaySends==sends+1&&displayClears==clears+1);
+    assert(motor.duty!=0); // Lighting reset must not stop remote-owned motor motion.
+    OledUI::Task();assert(displaySends==sends+1);
+    WakeGate::Wake();OledUI::Task();assert(displaySends==sends+2);
 }

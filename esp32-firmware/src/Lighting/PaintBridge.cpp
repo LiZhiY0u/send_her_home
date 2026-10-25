@@ -11,13 +11,20 @@
 namespace {
 PaintProtocol::Receiver receiver;
 QueueHandle_t commands=nullptr,acks=nullptr;
-struct Ack {uint8_t session;uint16_t sequence;bool automatic;bool effect;};
+struct Ack {uint8_t session;uint16_t sequence;bool automatic;bool effect;uint32_t epoch;};
 uint16_t phone=0xffff;bool subscribed=false,notifyPending=false,paintMode=false;
 uint8_t status[20]={0xa7,1,0,0,0,0,0,0};uint16_t statusSize=16;
 uint8_t motorStatus[16]={};bool motorPending=false;
 uint8_t lightingStatus[20]={};bool lightingPending=false;
 btstack_timer_source_t timer;
 btstack_context_callback_registration_t registration;
+uint32_t lightingEpoch=0;
+// Called only on the BTstack thread; reset lighting sessions, never motor or pairing state.
+void RefreshEpoch(){
+    if(lightingEpoch==WakeGate::Epoch())return;
+    lightingEpoch=WakeGate::Epoch();receiver.Disconnect();
+    notifyPending=lightingPending=paintMode=false;
+}
 void Status(uint8_t code,uint8_t op,uint8_t session,uint16_t sequence) {
     statusSize=16;
     status[2]=code;status[3]=paintMode?1:0;status[4]=session;status[5]=sequence;status[6]=sequence>>8;status[7]=op;
@@ -26,9 +33,10 @@ void Status(uint8_t code,uint8_t op,uint8_t session,uint16_t sequence) {
     if(phone!=0xffff&&subscribed)att_server_request_can_send_now_event(phone);
 }
 void Tick(btstack_timer_source_t*) {
+    RefreshEpoch();
     if(!motorPending&&phone!=0xffff&&subscribed)motorPending=MotorService::ReadReply(motorStatus);
     Ack ack;
-    if(acks&&xQueueReceive(acks,&ack,0)==pdTRUE) {
+    if(acks&&xQueueReceive(acks,&ack,0)==pdTRUE&&ack.epoch==WakeGate::Epoch()) {
         paintMode=!ack.automatic&&!ack.effect;
         if(ack.session==receiver.Session()) Status(0,ack.effect?6:(ack.automatic?5:4),ack.session,ack.sequence);
     }
@@ -56,6 +64,7 @@ void PaintBridge::Disconnect(uint16_t handle) {
     if(commands)xQueueReset(commands);
 }
 int PaintBridge::Write(uint16_t handle,uint16_t attribute,uint16_t transaction,uint16_t offset,uint8_t* data,uint16_t size) {
+    RefreshEpoch();
     if(handle!=phone||transaction!=ATT_TRANSACTION_MODE_NONE||offset)return 0;
     if(attribute==CccHandle) {
         if(size==2&&data)subscribed=(data[0]==1&&data[1]==0);
@@ -77,7 +86,7 @@ int PaintBridge::Write(uint16_t handle,uint16_t attribute,uint16_t transaction,u
     if(code) {Status(code,op,receiver.Session(),sequence);return 0;}
     if(op==1) {xQueueReset(commands);Status(0,op,receiver.Session(),0);}
     if(receiver.Ready()||receiver.AutoRequested()||receiver.EffectRequested()) {
-        Command command{};command.session=receiver.Session();command.sequence=receiver.Sequence();command.automatic=receiver.AutoRequested();
+        Command command{};command.epoch=lightingEpoch;command.session=receiver.Session();command.sequence=receiver.Sequence();command.automatic=receiver.AutoRequested();
         command.effect=receiver.EffectRequested();
         if(command.effect)std::memcpy(command.settings,receiver.EffectSettings(),10);
         else if(!command.automatic)std::memcpy(command.pixels,receiver.Pixels(),399);
@@ -93,6 +102,7 @@ uint16_t PaintBridge::ReadStatus(uint16_t handle,uint16_t attribute,uint16_t off
     return att_read_callback_handle_blob(status,statusSize,offset,data,size);
 }
 void PaintBridge::CanSend() {
+    RefreshEpoch();
     if(phone!=0xffff&&subscribed&&motorPending){
         if(att_server_notify(phone,StatusHandle,motorStatus,16)==0)motorPending=false;
         return;
@@ -100,7 +110,7 @@ void PaintBridge::CanSend() {
     if(phone!=0xffff&&subscribed&&notifyPending){if(att_server_notify(phone,StatusHandle,status,statusSize)==0)notifyPending=false;return;}
     if(phone!=0xffff&&subscribed&&lightingPending&&att_server_notify(phone,StatusHandle,lightingStatus,20)==0)lightingPending=false;
 }
-bool PaintBridge::Read(Command& command) {return commands&&xQueueReceive(commands,&command,0)==pdTRUE;}
+bool PaintBridge::Read(Command& command) {return commands&&xQueueReceive(commands,&command,0)==pdTRUE&&command.epoch==WakeGate::Epoch();}
 bool PaintBridge::SelectLocalEffect(uint8_t effect,bool automatic) {
     if(!commands||effect>=22)return false;
     Command command{};command.automatic=automatic;command.effect=!automatic;
@@ -120,5 +130,5 @@ bool PaintBridge::SetLocalBrightness(uint8_t percent){
 }
 void PaintBridge::Applied(const Command& command) {
     if(command.session==0)return;
-    if(acks){const Ack ack={command.session,command.sequence,command.automatic,command.effect};xQueueOverwrite(acks,&ack);}
+    if(acks){const Ack ack={command.session,command.sequence,command.automatic,command.effect,command.epoch};xQueueOverwrite(acks,&ack);}
 }
