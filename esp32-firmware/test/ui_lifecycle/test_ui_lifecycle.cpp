@@ -61,6 +61,8 @@ int main() {
     assert(check_box.s==selection && *selection==3);
     OledUI::OpenRoot(M_MAIN);
     assert(main_menu_count == 5 && main_icon_count == 5);
+    assert(main_icon_pic[4][0]==0xff); // Same filled background polarity as Light.
+    assert(main_icon_pic[4][32]==0xef); // Preserve motor outline, invert its pixels.
     assert(OledUI::NavigateTo(M_MOTOR)); OledUI::Layer_Init_In();
     ui.state = S_NONE; ui.init = true;
     ui.select[ui.layer] = 1; btn.id = BTN_ID_SP; btn.pressed = true;
