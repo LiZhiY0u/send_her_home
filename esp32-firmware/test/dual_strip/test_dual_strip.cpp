@@ -16,6 +16,18 @@ int main(){
  pair.show();assert(bottom.begun==1&&top.begun==1);
  assert(bottom.brightness==26&&top.brightness==26);
  assert(bottom.shown==1&&top.shown==1);
- for(unsigned i=0;i<133;++i)assert(bottom.pixels[i]==top.pixels[i]&&top.pixels[i]==i+1);
+ bool seen[133]={};
+ for(unsigned i=0;i<133;++i){
+  const unsigned mirrored=TopPanelMap::Index(i);
+  assert(mirrored<133&&!seen[mirrored]);seen[mirrored]=true;
+  const auto a=LedPhysicalMap::Get(i),b=LedPhysicalMap::Get(mirrored);
+  assert(a.x==b.x&&a.y==-b.y);assert(TopPanelMap::Index(mirrored)==i);
+  const auto rotation=LedPhysicalMap::Get(TopPanelMap::Index(i,false,true));
+  assert(rotation.x==-a.x&&rotation.y==-a.y);
+  const auto reflection=LedPhysicalMap::Get(TopPanelMap::Index(i,true,false));
+  assert(reflection.x==-a.x&&reflection.y==a.y);
+  assert(TopPanelMap::Index(i,false,false)==i);
+  assert(bottom.pixels[i]==i+1);assert(top.pixels[mirrored]==i+1);
+ }
  pair.clear();assert(bottom.pixels[132]==0&&top.pixels[132]==0);
 }

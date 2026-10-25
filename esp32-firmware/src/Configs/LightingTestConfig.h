@@ -10,5 +10,7 @@
 namespace LightingTestConfig {
 constexpr int Pin = 17;
 constexpr int TopPin = 5;
+constexpr bool TopMirrorLeftRight = true;
+constexpr bool TopRotate180 = true;
 static_assert(Pin != TopPin,"Top and bottom strips require separate GPIOs");
 }
