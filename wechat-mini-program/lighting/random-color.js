@@ -7,7 +7,7 @@ function cycleColor(seconds,base){
  const ms=Math.max(0,Math.floor((Number.isFinite(seconds)?seconds:0)*1000))
  const cycle=Math.floor(ms/5000),phase=ms%5000
  const from=cycle===0?base:target(cycle-1),to=target(cycle)
- const mix=Math.max(0,(phase-4000)/1000)
+ const mix=Math.max(0,(phase-1000)/4000)
  return from.map((v,i)=>Math.floor(v+(to[i]-v)*mix))
 }
 module.exports={cycleColor}

@@ -9,11 +9,11 @@ inline uint32_t Target(uint32_t index){
 inline uint32_t At(uint32_t ms,uint32_t base){
  const uint32_t cycle=ms/5000,phase=ms%5000;
  const uint32_t from=cycle?Target(cycle-1):base,to=Target(cycle);
- const int mix=phase>4000?phase-4000:0;
+ const int mix=phase>1000?phase-1000:0;
  uint32_t color=0;
  for(unsigned shift=0;shift<24;shift+=8){
   const int a=(from>>shift)&255,b=(to>>shift)&255;
-  const unsigned channel=(a*(1000-mix)+b*mix)/1000;
+  const unsigned channel=(a*(4000-mix)+b*mix)/4000;
   color|=channel<<shift;
  }
  return color;
