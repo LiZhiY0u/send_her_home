@@ -18,9 +18,7 @@ Slot slots[BP32_MAX_GAMEPADS];
 bool IsTarget(ControllerPtr controller)
 {
     const ControllerProperties properties = controller->getProperties();
-    for (uint8_t i = 0; i < 6; ++i)
-        if (properties.btaddr[i] != BluetoothConfig::TargetGamepadAddress[i]) return false;
-    return true;
+    return BluetoothConfig::IsAllowedGamepad(properties.btaddr);
 }
 
 void Submit(UserInput::Action action, uint32_t now_ms)
