@@ -16,6 +16,7 @@ public:
     void Reset();
 private:
     bool a_down_ = false;
+    bool b_down_ = false;
     UserInput::Action stick_ = UserInput::Action::None;
     UserInput::Action direction_ = UserInput::Action::None;
     uint32_t repeat_started_ = 0;

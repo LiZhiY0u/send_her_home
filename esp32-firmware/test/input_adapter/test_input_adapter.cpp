@@ -8,6 +8,7 @@ int main()
     assert(UiInputAdapter::ButtonId(Action::Previous) == 0);
     assert(UiInputAdapter::ButtonId(Action::Next) == 1);
     assert(UiInputAdapter::ButtonId(Action::Confirm) == 2);
+    assert(UiInputAdapter::ButtonId(Action::Back) == 3);
     assert(UiInputAdapter::ButtonId(Action::None) == 255);
     assert(InputAdapters::Encoder(1) == Action::Next);
     assert(InputAdapters::Encoder(-1) == Action::Previous);

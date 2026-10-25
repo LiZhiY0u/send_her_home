@@ -14,7 +14,20 @@ static void confirm_edges()
     assert(s.Update({1, 0, 0, 0}, 110) == Action::None);
     assert(s.Tick(1000) == Action::None);
     assert(s.Update({0, 0, 0, 0}, 1010) == Action::None);
-    assert(s.Update({3, 0, 0, 0}, 1020) == Action::Confirm);
+    assert(s.Update({3, 0, 0, 0}, 1020) == Action::Back);
+}
+static void back_edges(){
+    State s;
+    assert(s.Update({2,0,0,0},0)==Action::Back);
+    assert(s.Update({2,0,0,0},20)==Action::None);
+    assert(s.Tick(1000)==Action::None);
+    assert(s.Update({0,0,0,0},1010)==Action::None);
+    assert(s.Update({2,0,0,0},1020)==Action::Back);
+    s.Reset();assert(s.Update({3,1,0,0},0)==Action::Back);
+    assert(s.Tick(500)==Action::None);
+    assert(s.Update({3,1,0,0},600)==Action::None);
+    assert(s.Update({1,0,0,0},610)==Action::None); // Releasing B cannot confirm A.
+    s.Reset();assert(s.Update({2,0,0,0},620)==Action::Back);
 }
 static void repeat_timing(uint32_t start)
 {
@@ -69,6 +82,7 @@ static void stick_hysteresis()
 int main()
 {
     confirm_edges();
+    back_edges();
     repeat_timing(100);
     repeat_timing(UINT32_MAX - 200u);
     directions_and_priority();

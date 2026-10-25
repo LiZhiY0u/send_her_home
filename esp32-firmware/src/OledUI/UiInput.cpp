@@ -9,7 +9,7 @@
 #endif
 void OledUI::Key_Scan()
 {
-    static_assert(BTN_ID_CC == 0 && BTN_ID_CW == 1 && BTN_ID_SP == 2, "UI input IDs changed");
+    static_assert(BTN_ID_CC == 0 && BTN_ID_CW == 1 && BTN_ID_SP == 2 && BTN_ID_LP == 3, "UI input IDs changed");
     const uint32_t now_ms = millis();
     const UserInput::Action encoder = InputAdapters::Encoder(ENCODER::Encoder_GetDiff());
     if (encoder != UserInput::Action::None)

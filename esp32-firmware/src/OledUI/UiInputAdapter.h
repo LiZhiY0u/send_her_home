@@ -9,6 +9,7 @@ inline uint8_t ButtonId(UserInput::Action action)
     case UserInput::Action::Previous: return 0;
     case UserInput::Action::Next: return 1;
     case UserInput::Action::Confirm: return 2;
+    case UserInput::Action::Back: return 3; // Existing long-press/back behavior.
     default: return 255;
     }
 }
