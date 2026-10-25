@@ -2,21 +2,23 @@
 
 ESP32 展示柜固件与微信小程序，通过蓝牙手柄、手机和编码器控制灯光、电机及 OLED 菜单。
 
-仓库：[LiZhiY0u/send_her_home](https://github.com/LiZhiY0u/send_her_home)。项目运行时名称及蓝牙广播名仍为 **FigureCase**，仅维护 `main` 分支。
+项目运行时名称及蓝牙广播名为 **FigureCase**，仅维护 `main` 分支。
 
 ## 当前进度
 
 | 功能 | 当前实现 |
 |---|---|
-| OLED 与输入 | SH1106 128×64；Light、Editor、Volt、Setting、Motor；编码器、手柄和小程序五向遥控 |
-| 双灯盘 | 底面 GPIO17、顶面 GPIO5，各 133 颗 WS2812B；支持分层、区域与上下联动，顶面安装方向采用左右镜像补偿 |
-| 空间灯效 | 22 种可选效果，20 种自动轮播；OLED 和小程序均可选择 |
-| 亮度与颜色 | OLED 亮度滑条、小程序亮度/速度/颜色控制；可开启每 5 秒一次的随机颜色渐变 |
+| OLED 与输入 | SH1106 128×64；菜单顺序 Light → Motor → Editor → Volt → Setting；编码器、手柄和小程序五向遥控，方向键支持长按连发 |
+| 开机与唤醒 | 上电黑屏、熄灯；新按键、旋钮转动或蓝牙连接唤醒，播放白光启动序列后进入随机灯效 |
+| 双灯盘 | 底面 GPIO17、顶面 GPIO5，各 133 颗 WS2812B；支持分层、区域与上下联动，顶面采用左右镜像叠加 180° 旋转补偿 |
+| 空间灯效 | 22 种可选效果；自动模式从 21 种动态效果中随机选择，每种约 6 秒，避免连续重复 |
+| 亮度与颜色 | OLED 与小程序共用灯光状态；支持色盘、HSV、HEX、RGB 选色；自动模式每 2 秒换色、0.4 秒过渡 |
 | 手绘 | 平面灯板画布、软边补光、笔宽、颜色、橡皮和清空；蓝牙同步到上下灯盘 |
 | 3D 预览 | 上下双层、手势旋转/缩放、灯层/区域选择；横屏左右分区，竖屏模型与控制区分区 |
 | 电机 | DRV8837：启停、停机换向、速度滑条；OLED 与小程序共用状态；退出保持/停止策略 |
 | 连接提示 | 手柄与小程序独立连接通知，OLED 右侧滑入/滑出 |
-| 验证 | 最近代码验证：33 组固件主机测试、迁移安全检查、40 项小程序测试及 ESP32 编译通过 |
+| 模型 | 电机齿轮V2、四角无垫高V1、四角无顶V3、转盘V3；原始零件、STL 和配套宏见 `models/` |
+| 验证 | 最近代码验证：36 组固件主机测试、迁移安全检查、55 项小程序测试及 ESP32 编译通过 |
 
 已收到用户对灯位、双灯盘显示及前期本地电机控制的实物反馈；**新小程序电机联动及保持策略仍需完整真机回归**。编译和主机测试不代表电气、供电或运动安全验收。Editor 的部分功能仍为占位项。
 
@@ -33,6 +35,14 @@ ESP32 展示柜固件与微信小程序，通过蓝牙手柄、手机和编码�
 
 ## 目录
 
+| 文件夹 | 内容与用途 |
+|---|---|
+| [`esp32-firmware/`](esp32-firmware/) | ESP32 固件、PlatformIO 配置、C++ 主机测试及测试脚本 |
+| [`wechat-mini-program/`](wechat-mini-program/) | 微信小程序源码：遥控、灯控、手绘、电机及制作者页面 |
+| [`test/wechat-lighting/`](test/wechat-lighting/) | 小程序回归测试，覆盖蓝牙协议、状态同步、绘画、调色盘、3D 和电机客户端；由 `npm test` 调用 |
+| [`models/`](models/) | 本项目四组机械模型及全部对应格式，详见[模型索引](models/README.md) |
+| [`资料/`](资料/) | 原理图、PCB、设计说明、功能与验证记录 |
+
 ```text
 esp32-firmware/
   platformio.ini           ESP32 编译配置
@@ -47,17 +57,23 @@ esp32-firmware/
   test/                    C++ 主机测试与测试替身
   tools/                   测试脚本
 wechat-mini-program/
-  pages/                   遥控、3D 灯效、手绘、电机页面
+  pages/                   遥控、3D 灯效、手绘、电机、制作者页面
   ble/                     共用蓝牙连接与串行写队列
   lighting/                3D 场景、空间效果与手势
   painting/                软画笔、灯位、传输与确认
   motor/                   电机协议与页面客户端
+  color/                   HSV、RGB、HEX 颜色换算
+  components/              共用调色盘组件
+  assets/                  头像等静态素材
 test/wechat-lighting/       小程序 Node 测试
+models/                    原始零件、STL 网格和配套 SWP 宏
 资料/
   hardware/                原理图、PCB 工程及 PDF
   docs/                    功能说明、设计和验收记录
   images/                  历史学习配图
 ```
+
+根目录 `test/` 不是临时演示文件：`wechat-mini-program/package.json` 的测试命令直接引用它。普通使用或烧录无需运行这些测试，开发时保留用于检查协议和功能回归；`esp32-firmware/test/` 则负责固件的 C++ 主机测试，两者用途不同。
 
 固件目录历史名为 `2.controller_test`。旧 OLED 示例与 Bad Apple 示例可从 Git 历史查找；历史文档不一定代表当前功能。
 
@@ -67,7 +83,7 @@ test/wechat-lighting/       小程序 Node 测试
 
 22 种效果：常亮、旋转光线、圆形扩散、水平波浪、斜向波浪、正弦光带、海浪叠加、方框平移、方形扩散、方框旋转、雷达扫描、螺旋光带、四角接力、极光流动、向心圆环、双向对撞、偏心涟漪、菱形脉冲、弹跳光块、双臂风车、花瓣开合、对角呼吸。启动白光序列完成后，从 21 种动态效果中随机选择，避免连续重复；按实际毫秒计时，每种约 6 秒，切换误差最多约一帧及任务调度耗时。
 
-- OLED：`Light → Effect` 选择效果或 `Auto Playlist`；`Brightness` 按 5% 步进调节；`Random Color` 开关随机渐变。
+- OLED：`Light → Effect` 选择效果；`Restore Random` 直接恢复随机灯效；`Brightness` 按 5% 步进调节；`Random Color` 开关随机渐变。
 - 亮度上限为 `26/255`，页面的 100% 对应该上限，**不是灯珠全功率输出**；当前驱动存在整数亮度分档。
 - 手动灯效随机色每周期 5 秒，保持约 1 秒、渐变 4 秒；自动模式每 2 秒换色、0.4 秒过渡，OLED 随机色开关可以关闭自动换色。
 - 小程序支持顶部/底部/双面、全部/中心/四角/单角及同步/反向/镜像/延迟联动；手绘画面同步到双面，顶面输出层统一补偿安装镜像。
@@ -163,11 +179,27 @@ UUID 完整格式与服务相同，仅将 FF10 替换为相应尾部。五向键
 | 22 种效果及联动边界 | [空间灯效库](资料/docs/spatial-effect-library.md) |
 | OLED 效果 / 亮度 | [灯效菜单](资料/docs/oled-effect-selection.md)、[亮度滑条](资料/docs/oled-brightness.md) |
 | 随机颜色 | [渐变说明](资料/docs/random-color.md) |
+| 启动与顶面方向补偿 | [上电与唤醒](资料/docs/startup-wake.md) |
+| 小程序与固件联动 | [协议、状态回读及控制说明](资料/docs/integration-controls.md) |
+| 通用调色盘 | [色盘、HSV、HEX、RGB](资料/docs/color-picker.md) |
 | 手绘传输 | [绘画验证](资料/docs/led-paint-validation.md) |
 | 电机控制及安全边界 | [小程序电机说明](资料/docs/motor-mini-program.md)、[DRV8837 记录](资料/docs/drv8837-validation.md) |
 | 固件架构历史 | [架构设计](资料/docs/superpowers/specs/2026-10-10-firmware-architecture-design.md) |
 
-部分专题文档保留了首批实现时的限制，以当前源码和本 README 汇总为准。没有云端服务、独立分层实物输出、完整灯光状态同步或实测转速闭环。
+部分专题文档保留了首批实现时的限制，以当前源码和本 README 汇总为准。项目没有云端服务或实测转速闭环。
+
+## 机械模型
+
+[`models/`](models/) 收录本项目使用的四组模型，文件名和版本保持原样：
+
+| 模型 | 已收录格式 |
+|---|---|
+| 电机齿轮V2 | SLDPRT、STL |
+| 四角无垫高V1 | SLDPRT、STL、SWP |
+| 四角无顶V3 | SLDPRT、STL、SWP |
+| 转盘V3 | SLDPRT、STL、SWP |
+
+SLDPRT 用于 SolidWorks 编辑，STL 用于网格查看或切片，SWP 为配套宏文件。全部 11 个文件的下载链接见[模型索引](models/README.md)。
 
 ## 硬件归档
 
