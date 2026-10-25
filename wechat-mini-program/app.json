@@ -2,7 +2,8 @@
   "pages": [
     "pages/remote/remote",
     "pages/lighting/lighting",
-    "pages/paint/paint"
+    "pages/paint/paint",
+    "pages/motor/motor"
   ],
   "window": {
     "navigationBarTitleText": "FigureCase",

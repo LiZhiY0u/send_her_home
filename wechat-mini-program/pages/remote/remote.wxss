@@ -227,3 +227,4 @@ page{background:#f7f8fa;color:#262535}
 .hint-dot.online {
   background: #22c55e;
 }
+.motor-entry{display:block;width:100%;padding:22rpx;color:#7860be;background:#eeebf8;border-radius:24rpx;text-align:center;box-sizing:border-box;font-size:24rpx}

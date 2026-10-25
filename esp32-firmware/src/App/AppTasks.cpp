@@ -12,6 +12,7 @@
 #include "Lighting/SpatialEffects.h"
 #include "Lighting/SynchronizedStrips.h"
 #include "Lighting/RandomColor.h"
+#include "MotorControl/MotorService.h"
 static_assert(configTICK_RATE_HZ == 1000, "Task migration requires original 1ms RTOS tick");
 // Existing RGB implementation references this statically owned object.
 Adafruit_NeoPixel RGB3(BoardConfig::RgbCount, BoardConfig::RgbPin, NEO_GRB + NEO_KHZ800);
@@ -116,7 +117,7 @@ void Encoder(void*) {
 }
 void Display(void*) {
     OledUI::Init();
-    for (;;) { OledUI::Task(); vTaskDelay(pdMS_TO_TICKS(TaskConfig::DisplayMs)); }
+    for (;;) { MotorService::Tick(); OledUI::Task(); vTaskDelay(pdMS_TO_TICKS(TaskConfig::DisplayMs)); }
 }
 }
 bool AppTasks::Start()

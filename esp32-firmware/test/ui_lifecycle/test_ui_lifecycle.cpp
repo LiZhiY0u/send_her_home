@@ -5,6 +5,7 @@
 #include "DRV8837.h"
 #include "OledUI/UiPages/UiPages.h"
 #include "Lighting/PaintBridge.h"
+#include "MotorControl/MotorService.h"
 Motor motor;
 uint32_t test_now=0;SerialFake Serial;
 U8G2_SH1106_128X64_NONAME_F_HW_I2C u8g2;
@@ -76,4 +77,10 @@ int main() {
     OledUI::Layer_Init_Out();
     assert(OledUI::NavigateTo(M_MOTOR)); OledUI::Layer_Init_In();
     assert(motor.duty == 0);
+    assert(OledUI::NavigateTo(M_MOTOR_SPEED));OledUI::Layer_Init_In();
+    MotorService::State().remote=true;MotorService::State().running=true;
+    motor.drive(MotorService::State().Duty());
+    btn.id=BTN_ID_SP;btn.pressed=true;UiPages::MotorSpeedProcess();
+    assert(MotorService::State().remote);OledUI::Layer_Init_Out();
+    assert(OledUI::Back());assert(motor.duty!=0);
 }

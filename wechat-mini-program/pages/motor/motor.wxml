@@ -1,0 +1,24 @@
+<view class="motor-page">
+ <view class="motor-header"><view class="eyebrow">MOTION CONTROL</view><view class="title">让收藏，转动起来。</view><view class="subtitle">{{message}}</view></view>
+ <view class="motor-grid">
+  <view class="drive-card">
+   <view class="state-tag {{running ? 'active' : ''}}">{{!ready ? '状态待确认' : (running ? '运行中' : '已停止')}}</view>
+   <view class="rotor {{running && ready ? 'spinning' : ''}} {{reverse ? 'reversed' : ''}}"><view></view><view></view><view></view><text>FC</text></view>
+   <view class="direction-label">{{ready ? (reverse ? '反向旋转' : '正向旋转') : '连接不会自动启动'}}</view>
+   <view class="muted">示意动画 · 非实测转速</view>
+   <button class="run-button {{running ? 'stop' : ''}}" disabled="{{!ready || busy}}" loading="{{busy}}" bindtap="toggleRun">{{running ? '停止电机' : '启动电机'}}</button>
+   <button class="connect" wx:if="{{!ready}}" bindtap="connectMotor">连接 / 重新读取</button>
+  </view>
+  <view class="settings-card">
+   <view class="row"><text>旋转方向</text><text class="muted">{{running ? '停止后可换向' : '正转 / 反转'}}</text></view>
+   <view class="direction-buttons"><button class="{{!reverse ? 'selected' : ''}}" disabled="{{!ready || busy || running}}" data-reverse="false" bindtap="direction">正转 ↻</button><button class="{{reverse ? 'selected' : ''}}" disabled="{{!ready || busy || running}}" data-reverse="true" bindtap="direction">反转 ↺</button></view>
+   <view class="row"><text>输出速度</text><text class="speed">{{draftSpeed}}<text>%</text></text></view>
+   <slider min="0" max="100" step="5" value="{{draftSpeed}}" disabled="{{!ready || busy}}" activeColor="#7560dd" block-color="#7560dd" block-size="20" bindchanging="speedChanging" bindchange="speedChanged" />
+   <view class="muted">PWM 输出比例，不是实测转速</view>
+   <view class="keep-row"><view><view>退出后保持运行</view><view class="muted">包含后台、锁屏和蓝牙断开</view></view><switch checked="{{keepRunning}}" disabled="{{!ready || busy}}" color="#7560dd" bindchange="keepChanged" /></view>
+   <view class="policy {{keepRunning ? 'warning' : ''}}">{{keepRunning ? '保持模式：启动后可持续运行。手机断开后，请重新连接或在设备上停止。' : '停止模式：离开页面发送停止；断连或心跳超时由设备停止。'}}</view>
+   <button class="stop-always" bindtap="stopMotor">停止 / 连接后停止</button>
+   <view class="error" wx:if="{{error}}">{{error}}</view>
+  </view>
+ </view>
+</view>

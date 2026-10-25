@@ -34,4 +34,6 @@ test('page registers using JS-only local modules, before any Canvas or npm initi
   assert.equal(page.data.diameter,24)
   load(path.join(root, 'pages/remote/remote.js'))
   assert(page && typeof page.sendKey === 'function')
+  load(path.join(root,'pages/motor/motor.js'))
+  assert(page && typeof page.stopMotor==='function' && typeof page.keepChanged==='function')
 })

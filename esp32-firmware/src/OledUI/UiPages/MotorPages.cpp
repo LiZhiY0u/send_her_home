@@ -2,25 +2,23 @@
 #include "../UiContext.h"
 #include "../MotorPageState.h"
 #include "DRV8837.h"
+#include "MotorControl/MotorService.h"
 #include <cstdio>
 
 extern Motor motor;
 namespace {
-MotorPageState state;
-int appliedDuty = 0;
-void Apply() {
-    const int duty = state.Duty();
-    if (duty != appliedDuty) { motor.drive(duty); appliedDuty = duty; }
+MotorModel& state=MotorService::State();
+void Apply() {MotorService::ApplyLocal();}
 }
-}
-void UiPages::MotorStop() { state.Stop(); motor.stop(); appliedDuty = 0; }
+void UiPages::MotorStop() { MotorService::StopLocal(); }
 void UiPages::MotorInit() {
-    // Returning from speed adjustment preserves the session; entering from
-    // the main menu is stopped because every exit stops the motor.
+    // Observe shared state without taking ownership. Only explicit local
+    // control changes claim it; navigation cannot stop remote-owned motion.
 }
 void UiPages::MotorProcess() {
     char run[24], direction[24], speed[24];
-    std::snprintf(run, sizeof(run), "- Run       %s", state.running ? "ON" : "OFF");
+    std::snprintf(run, sizeof(run), "- Run %s %s", state.running ? "ON" : "OFF",
+        state.remote?(state.keepRunning?"HOLD":"LEASE"):"LOCAL");
     std::snprintf(direction, sizeof(direction), "- Dir       %s", state.reverse ? "REV" : "FWD");
     std::snprintf(speed, sizeof(speed), "- Speed     %d%%", state.speed);
     const M_SELECT menu[] = {{"[ Motor ]", MenuItemType::Back},
@@ -51,6 +49,7 @@ void UiPages::MotorSpeedProcess() {
     btn.pressed = false;
     if (btn.id == BTN_ID_CW) state.AdjustSpeed(5);
     else if (btn.id == BTN_ID_CC) state.AdjustSpeed(-5);
-    else if (btn.id == BTN_ID_SP || btn.id == BTN_ID_LP) OledUI::Back();
+    else if (btn.id == BTN_ID_SP || btn.id == BTN_ID_LP) {OledUI::Back();return;}
+    else return;
     Apply();
 }

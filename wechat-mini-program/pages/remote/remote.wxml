@@ -63,6 +63,9 @@
     <navigator url="/pages/paint/paint" class="feature-card paint-card"><view class="feature-art paint-art">✦</view><view class="feature-title">以光作画 ↗</view><view class="feature-caption">软笔绘画 · 实时同步</view></navigator>
   </view>
   <view class="hint">
+    <navigator url="/pages/motor/motor" class="motor-entry">电机控制 · 启停 / 方向 / 速度 ↗</navigator>
+  </view>
+  <view class="hint">
     <view class="hint-dot {{connected ? 'online' : ''}}"></view>
     <text>{{connected ? '连接正常，可以控制设备' : '开启手机蓝牙后连接设备'}}</text>
   </view>

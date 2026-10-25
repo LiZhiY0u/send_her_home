@@ -1,6 +1,7 @@
 #include "PaintBridge.h"
 #include "PaintProtocol.h"
 #include "PaintMapIdentity.h"
+#include "MotorControl/MotorService.h"
 #include <Arduino.h>
 #include <btstack.h>
 #include <freertos/FreeRTOS.h>
@@ -12,6 +13,7 @@ QueueHandle_t commands=nullptr,acks=nullptr;
 struct Ack {uint8_t session;uint16_t sequence;bool automatic;bool effect;};
 uint16_t phone=0xffff;bool subscribed=false,notifyPending=false,paintMode=false;
 uint8_t status[16]={0xa7,1,0,0,0,0,0,0};
+uint8_t motorStatus[16]={};bool motorPending=false;
 btstack_timer_source_t timer;
 btstack_context_callback_registration_t registration;
 void Status(uint8_t code,uint8_t op,uint8_t session,uint16_t sequence) {
@@ -21,12 +23,13 @@ void Status(uint8_t code,uint8_t op,uint8_t session,uint16_t sequence) {
     if(phone!=0xffff&&subscribed)att_server_request_can_send_now_event(phone);
 }
 void Tick(btstack_timer_source_t*) {
+    if(!motorPending&&phone!=0xffff&&subscribed)motorPending=MotorService::ReadReply(motorStatus);
     Ack ack;
     if(acks&&xQueueReceive(acks,&ack,0)==pdTRUE) {
         paintMode=!ack.automatic&&!ack.effect;
         if(ack.session==receiver.Session()) Status(0,ack.effect?6:(ack.automatic?5:4),ack.session,ack.sequence);
     }
-    if(notifyPending&&subscribed&&phone!=0xffff)att_server_request_can_send_now_event(phone);
+    if((notifyPending||motorPending)&&subscribed&&phone!=0xffff)att_server_request_can_send_now_event(phone);
     btstack_run_loop_set_timer(&timer,30);btstack_run_loop_add_timer(&timer);
 }
 void StartTimer(void*) {
@@ -35,16 +38,18 @@ void StartTimer(void*) {
 }
 }
 bool PaintBridge::Init() {
+    if(!MotorService::Init())return false;
     if(commands)return true;
     commands=xQueueCreate(1,sizeof(Command));acks=xQueueCreate(1,sizeof(Ack));
     if(!commands||!acks) { if(commands)vQueueDelete(commands);if(acks)vQueueDelete(acks);commands=acks=nullptr;return false; }
     registration.callback=StartTimer;registration.context=nullptr;
     btstack_run_loop_execute_on_main_thread(&registration);return true;
 }
-void PaintBridge::Connect(uint16_t handle) {phone=handle;subscribed=false;receiver.Disconnect();}
+void PaintBridge::Connect(uint16_t handle) {phone=handle;subscribed=false;motorPending=false;receiver.Disconnect();MotorService::Connect();}
 void PaintBridge::Disconnect(uint16_t handle) {
     if(handle!=phone)return;
     phone=0xffff;subscribed=notifyPending=false;receiver.Disconnect();
+    motorPending=false;MotorService::Disconnect();
     if(commands)xQueueReset(commands);
 }
 int PaintBridge::Write(uint16_t handle,uint16_t attribute,uint16_t transaction,uint16_t offset,uint8_t* data,uint16_t size) {
@@ -54,6 +59,7 @@ int PaintBridge::Write(uint16_t handle,uint16_t attribute,uint16_t transaction,u
         return 0;
     }
     if(attribute!=WriteHandle||!commands||!data)return 0;
+    if(size&&data[0]==0xb8)return MotorService::Enqueue(data,size)?0:0x13;
     const uint8_t code=receiver.Accept(data,size,millis());
     const uint8_t op=size>=3?data[2]:0;
     const uint16_t sequence=size>=6?static_cast<uint16_t>(data[4]|(data[5]<<8)):0;
@@ -76,6 +82,10 @@ uint16_t PaintBridge::ReadStatus(uint16_t handle,uint16_t attribute,uint16_t off
     return att_read_callback_handle_blob(status,16,offset,data,size);
 }
 void PaintBridge::CanSend() {
+    if(phone!=0xffff&&subscribed&&motorPending){
+        if(att_server_notify(phone,StatusHandle,motorStatus,16)==0)motorPending=false;
+        return;
+    }
     if(phone!=0xffff&&subscribed&&notifyPending&&att_server_notify(phone,StatusHandle,status,16)==0)notifyPending=false;
 }
 bool PaintBridge::Read(Command& command) {return commands&&xQueueReceive(commands,&command,0)==pdTRUE;}
