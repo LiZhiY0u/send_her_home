@@ -3,10 +3,11 @@
     "pages/remote/remote",
     "pages/lighting/lighting",
     "pages/paint/paint",
-    "pages/motor/motor"
+    "pages/motor/motor",
+    "pages/creator/creator"
   ],
   "window": {
-    "navigationBarTitleText": "FigureCase",
+    "navigationBarTitleText": "send_her_home",
     "navigationBarBackgroundColor": "#f7f8fa",
     "navigationBarTextStyle": "black",
     "backgroundColor": "#f7f8fa"

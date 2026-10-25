@@ -1,0 +1,12 @@
+<view class="creator-page">
+  <view class="creator-profile">
+    <view class="avatar-wrap">
+      <view class="avatar-glow"></view>
+      <view class="avatar-frame rainbow-rim"><image class="avatar" src="/assets/creator-avatar.jpg" mode="aspectFill" /></view>
+    </view>
+    <view class="creator-copy">
+      <view class="designed-by">Designed by</view>
+      <view class="creator-name">LiZhiY0u</view>
+    </view>
+  </view>
+</view>

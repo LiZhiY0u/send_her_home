@@ -1,5 +1,6 @@
 <view class="page">
-  <view class="page-heading"><text class="eyebrow">FIGURECASE</text><view class="hero-title">你的收藏，<text>自带光芒。</text></view><view class="hero-subtitle">为每一份热爱，调一束刚好的光</view></view>
+  <view class="home-control">
+  <view class="page-heading"><text class="eyebrow">LIGHT / MOTION / CREATION</text><view class="hero-title brand-title">send_her_home</view></view>
   <view class="status-card">
     <view class="device-summary">
       <view class="device-icon">FC</view>
@@ -30,13 +31,13 @@
 
     <view class="direction-pad">
       <view class="key-row key-row-center">
-        <view class="key" hover-class="key-active" hover-stay-time="80" data-code="1" bindtap="sendKey">
+        <view class="key" hover-class="key-active" hover-stay-time="80" data-code="1" bindtouchstart="startKey" bindtouchend="endKey" bindtouchcancel="endKey">
           <text class="key-symbol">↑</text>
           <text class="key-label">上</text>
         </view>
       </view>
       <view class="key-row key-row-middle">
-        <view class="key" hover-class="key-active" hover-stay-time="80" data-code="3" bindtap="sendKey">
+        <view class="key" hover-class="key-active" hover-stay-time="80" data-code="3" bindtouchstart="startKey" bindtouchend="endKey" bindtouchcancel="endKey">
           <text class="key-symbol">←</text>
           <text class="key-label">左</text>
         </view>
@@ -44,13 +45,13 @@
           <text class="confirm-dot"></text>
           <text class="key-label">确定</text>
         </view>
-        <view class="key" hover-class="key-active" hover-stay-time="80" data-code="4" bindtap="sendKey">
+        <view class="key" hover-class="key-active" hover-stay-time="80" data-code="4" bindtouchstart="startKey" bindtouchend="endKey" bindtouchcancel="endKey">
           <text class="key-symbol">→</text>
           <text class="key-label">右</text>
         </view>
       </view>
       <view class="key-row key-row-center">
-        <view class="key" hover-class="key-active" hover-stay-time="80" data-code="2" bindtap="sendKey">
+        <view class="key" hover-class="key-active" hover-stay-time="80" data-code="2" bindtouchstart="startKey" bindtouchend="endKey" bindtouchcancel="endKey">
           <text class="key-symbol">↓</text>
           <text class="key-label">下</text>
         </view>
@@ -58,15 +59,17 @@
     </view>
   </view>
 
-  <view class="feature-grid">
-    <navigator url="/pages/lighting/lighting" class="feature-card preview-card"><view class="feature-art orbit-art"><view></view><view></view><view></view></view><view class="feature-title">探索灯光 ↗</view><view class="feature-caption">3D 空间 · 离线预览</view></navigator>
-    <navigator url="/pages/paint/paint" class="feature-card paint-card"><view class="feature-art paint-art">✦</view><view class="feature-title">以光作画 ↗</view><view class="feature-caption">软笔绘画 · 实时同步</view></navigator>
   </view>
-  <view class="hint">
-    <navigator url="/pages/motor/motor" class="motor-entry">电机控制 · 启停 / 方向 / 速度 ↗</navigator>
+  <scroll-view class="home-features" scroll-y enhanced show-scrollbar="{{false}}">
+  <view class="feature-grid">
+    <navigator url="/pages/lighting/lighting" class="feature-card preview-card"><view class="feature-art orbit-art"><view></view><view></view><view></view></view><view class="feature-title">？！灯灯！？ ↗</view></navigator>
+    <navigator url="/pages/paint/paint" class="feature-card paint-card"><view class="feature-art paint-art">✦</view><view class="feature-title">？！画画！？ ↗</view></navigator>
+    <navigator url="/pages/motor/motor" class="feature-card motor-card"><view class="feature-art motor-art"><view class="motor-ring"></view><view class="motor-axis"></view></view><view class="feature-title">？！转转！？ ↗</view></navigator>
+    <navigator url="/pages/creator/creator" class="feature-card creator-card"><view class="feature-art creator-art"><view class="mini-avatar-rim"><image src="/assets/creator-avatar.jpg" mode="aspectFill" class="mini-avatar" /></view></view><view class="feature-title">😴 ↗</view></navigator>
   </view>
   <view class="hint">
     <view class="hint-dot {{connected ? 'online' : ''}}"></view>
     <text>{{connected ? '连接正常，可以控制设备' : '开启手机蓝牙后连接设备'}}</text>
   </view>
+  </scroll-view>
 </view>
