@@ -1,0 +1,21 @@
+<view wx:if="{{visible}}" class="picker-mask" style="top:0;right:0;bottom:0;left:0" catchtouchmove="swallow">
+ <view class="picker-sheet">
+  <view class="picker-header"><text>自定义颜色</text><view class="color-sample" style="background:{{hex}}"></view><text class="color-code">{{hex}}</text></view>
+  <view class="picker-workspace">
+   <view class="wheel-pane"><canvas type="2d" id="color-wheel" class="color-wheel" catchtouchstart="touchWheel" catchtouchmove="touchWheel"></canvas><view wx:if="{{wheelError}}" class="input-error">{{wheelError}}</view></view>
+   <scroll-view class="picker-controls" scroll-y enhanced show-scrollbar="{{false}}">
+    <view class="control-row"><text>色相</text><text>{{hText}}°</text></view>
+    <slider min="0" max="360" step="1" value="{{h}}" block-size="18" activeColor="#8870d4" data-field="h" bindchanging="hsvChanged" bindchange="hsvChanged" />
+    <view class="control-row"><text>饱和度</text><text>{{sText}}%</text></view>
+    <slider min="0" max="100" step="1" value="{{s}}" block-size="18" activeColor="#8870d4" data-field="s" bindchanging="hsvChanged" bindchange="hsvChanged" />
+    <view class="control-row"><text>颜色明度</text><text>{{vText}}%</text></view>
+    <slider min="0" max="100" step="1" value="{{v}}" block-size="18" activeColor="#8870d4" data-field="v" bindchanging="hsvChanged" bindchange="hsvChanged" />
+    <view class="hex-row"><text>HEX</text><input value="{{hexInput}}" maxlength="7" bindinput="hexChanged" placeholder="#FF7096" /></view>
+    <button class="expand-rgb" bindtap="toggleRgb">{{rgbExpanded ? '收起 RGB 精调' : '展开 RGB 精调'}}</button>
+    <view wx:if="{{rgbExpanded}}" class="rgb-row"><view><text>R</text><input type="number" maxlength="3" value="{{rText}}" data-field="rText" bindinput="rgbChanged" /></view><view><text>G</text><input type="number" maxlength="3" value="{{gText}}" data-field="gText" bindinput="rgbChanged" /></view><view><text>B</text><input type="number" maxlength="3" value="{{bText}}" data-field="bText" bindinput="rgbChanged" /></view></view>
+    <view wx:if="{{inputError}}" class="input-error">{{inputError}}</view>
+   </scroll-view>
+  </view>
+  <view class="picker-footer"><button class="cancel" bindtap="cancel">取消</button><button class="confirm" disabled="{{!!inputError}}" bindtap="confirm">应用颜色</button></view>
+ </view>
+</view>
