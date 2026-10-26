@@ -1,7 +1,7 @@
 #pragma once
 struct MotorPageState {
     bool running = false, reverse = false;
-    int speed = 30;
+    int speed = 60;
     int Duty() const { return running ? (reverse ? -1 : 1) * speed * 255 / 100 : 0; }
     void ToggleRun() { running = !running; }
     void ToggleDirection() { if (!running) reverse = !reverse; }

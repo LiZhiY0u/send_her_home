@@ -1,7 +1,7 @@
 #include "MotorControl/MotorModel.h"
 #include <cassert>
 int main(){
- MotorModel m;assert(!m.running&&m.speed==30&&m.keepRunning);
+ MotorModel m;assert(!m.running&&m.speed==60&&m.keepRunning);
  assert(m.SetRemote(true,false,30,true,10,5));assert(m.Duty()==76);
  m.Tick(100000,false,5);assert(m.running);
  m.Stop();assert(m.Patch(4,true,false,40,true,0,5));assert(!m.running&&m.speed==40);
