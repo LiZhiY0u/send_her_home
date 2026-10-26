@@ -9,4 +9,6 @@ page{background:#f7f8fa;color:#292637}
 .creator-copy{flex:1;min-width:0;display:flex;flex-direction:column;align-items:flex-start;justify-content:center;gap:10px}.designed-by{display:inline-block;font-size:14px;color:#fff;background:#111;border:1px solid #111;padding:4px 9px;line-height:1.5}.creator-name{font-size:25px;font-weight:700;color:#6651af;letter-spacing:-.8px;line-height:1.4;overflow-wrap:anywhere}
 @keyframes rainbow-flow{0%,100%{background-position:0% 50%}50%{background-position:100% 50%}}
 .creator-name{position:relative;left:12px}
+.creator-message{margin-top:4px;font-size:12px;line-height:1.7;color:#948aa5;overflow-wrap:anywhere}
+@media(orientation:landscape){.creator-message{font-size:16px}}
 @media(orientation:landscape){.creator-page{padding:16px calc(24px + env(safe-area-inset-right)) calc(16px + env(safe-area-inset-bottom)) calc(24px + env(safe-area-inset-left))}.creator-profile{width:auto;max-width:900px;gap:42px;padding:20px 38px}.avatar-wrap{flex:0 0 auto;width:min(60vh,300px)}.creator-name{font-size:42px}.designed-by{font-size:23px}.creator-copy{gap:16px}}
