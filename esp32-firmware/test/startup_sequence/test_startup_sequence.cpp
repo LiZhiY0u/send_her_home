@@ -6,13 +6,27 @@ int main(){
     assert(!WakeGate::Awake());assert(WakeGate::Wake());assert(!WakeGate::Wake());
     StartupSequence::State state;
     assert(!state.Active(false,100));assert(state.Active(true,100));
+    assert(state.BrightnessPercent(100)==40);
+    assert(state.BrightnessPercent(100+StartupSequence::FillMs+StartupSequence::DrainMs-1)==40);
+    assert(state.BrightnessPercent(100+StartupSequence::FillMs+StartupSequence::DrainMs)==100);
     assert(state.Strength(0,0,100)==1);assert(state.Strength(100,100,100)==0);
     assert(state.Active(true,1100));assert(state.Strength(30,0,1100)==1);
     assert(state.Strength(90,90,1100)==0);
     assert(state.Active(true,2100));assert(state.Strength(100,100,2100)==1);
     assert(StartupSequence::Color==0xffffff);
     assert(StartupSequence::HoldMs==0);
-    assert(state.Strength(100,100,2120)==0); // Starts shrinking on the next frame, without a hold.
+    const float fading=state.Strength(100,100,2200);
+    assert(fading>0&&fading<1); // Outer LEDs fade instead of switching off abruptly.
+    const float entering=state.Strength(80,0,1100);
+    assert(entering>0&&entering<1);
+    for(uint32_t t=120;t<2100;t+=20){
+        const float a=state.Strength(80,0,t-20),b=state.Strength(80,0,t);
+        assert(b>=a&&b-a<.12f);
+    }
+    for(uint32_t t=2120;t<4100;t+=20){
+        const float a=state.Strength(80,0,t-20),b=state.Strength(80,0,t);
+        assert(b<=a&&a-b<.12f);
+    }
     assert(state.Active(true,3100));
     assert(state.Strength(30,0,3100)==1);assert(state.Strength(100,100,3100)==0);
     assert(state.Active(true,4100));assert(state.Strength(0,0,4100)==0); // All dark frame.

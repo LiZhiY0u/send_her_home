@@ -3,6 +3,7 @@
 #include "../MainPageState.h"
 #include "../UiNavigation.h"
 #include "HAL/HAL.h"
+#include "Lighting/PaintBridge.h"
 void OledUI::Tile_Param_Init()
 {
     MainPageState::Initialize(ui, tile, {
@@ -54,15 +55,19 @@ void OledUI::Main_Proc()
         case BTN_ID_CW:
         case BTN_ID_CC:
             UiPages::RotateTile();
+            if(ui.select[ui.layer]==0)PaintBridge::TurnOff();
+            else if(ui.select[ui.layer]==1)PaintBridge::StartFromHome();
             break;
         case BTN_ID_SP:
             switch (ui.select[ui.layer])
             {
-            case 0: NavigateTo(M_LIGHT_MAIN); break;
-            case 1: NavigateTo(M_MOTOR); break;
-            case 2: NavigateTo(M_EDITOR); break;
-            case 3: NavigateTo(M_VOLT); break;
-            case 4: NavigateTo(M_SETTING); break;
+            case 0: PaintBridge::TurnOff(); break;
+            case 1: PaintBridge::StartFromHome();NavigateTo(M_LIGHT_MAIN); break;
+            case 2: NavigateTo(M_MOTOR); break;
+            case 3: NavigateTo(M_EDITOR); break;
+            case 4: NavigateTo(M_VOLT); break;
+            case 5: NavigateTo(M_SETTING); break;
+            case 6: NavigateTo(M_CREATOR); break;
             }
             break;
         }
@@ -97,5 +102,18 @@ void OledUI::Editor_Proc()
             }
             break;
         }
+    }
+}
+
+void UiPages::CreatorProcess(){
+    u8g2.setFont(LIST_FONT);
+    u8g2.drawBox(23,12,82,17);
+    u8g2.setDrawColor(0);
+    u8g2.drawStr(28,24,"Designed by");
+    u8g2.setDrawColor(1);
+    u8g2.drawStr(36,47,"LiZhiY0u");
+    if(btn.pressed){
+        btn.pressed=false;
+        if(btn.id==BTN_ID_SP||btn.id==BTN_ID_LP)OledUI::Back();
     }
 }

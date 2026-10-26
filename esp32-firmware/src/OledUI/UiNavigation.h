@@ -22,6 +22,7 @@ inline UI_PAGE ParentOf(UI_PAGE page)
 {
     switch (page)
     {
+    case M_CREATOR:
     case M_EDITOR:
     case M_VOLT:
     case M_SETTING:

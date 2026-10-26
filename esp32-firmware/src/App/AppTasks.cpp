@@ -41,6 +41,7 @@ void Lighting(void*) {
     testStrip.clear(); testStrip.show();
     unsigned step = 0;
     bool painting = false;
+    bool lightsOff=false;
     bool selectedEffect = false;
     uint8_t effectSettings[10]={1,50,100,0x57,0xd9,0xff,1,0,0,0};
     uint32_t effectStart=0,autoStart=0;
@@ -59,13 +60,17 @@ void Lighting(void*) {
     for (;;) {
         if(resetEpoch!=WakeGate::Epoch()){
             resetEpoch=WakeGate::Epoch();
-            painting=selectedEffect=autoStarted=false;step=0;effectStart=autoStart=colorStart=0;
+            lightsOff=false;painting=selectedEffect=autoStarted=false;step=0;effectStart=autoStart=colorStart=0;
             randomColor=true;randomBase=shownColor=0x57d9ff;outputBrightness=100;automaticEffect=0;
             startup=StartupSequence::State{};randomEffects=RandomEffect::State(millis());automaticColors=AutoColor::State(millis()^0x85ebca6bu);
             LightingState::Snapshot defaults;
             for(unsigned i=0;i<10;++i)effectSettings[i]=defaults.settings[i];
             for(auto& pixel:paintedPixels)pixel=0;
-            command={};testStrip.setBrightness(LedStripTest::Brightness);testStrip.clear();testStrip.show();
+            // Do not construct a second 400-byte pixel command on this task's stack.
+            command.session=0;command.sequence=0;command.automatic=false;
+            command.restartIfOff=command.off=command.effect=command.colorModeOnly=command.brightnessOnly=false;
+            command.epoch=resetEpoch;
+            testStrip.setBrightness(LedStripTest::Brightness);testStrip.clear();testStrip.show();
             LightingState::Publish(defaults);
         }
         const bool haveCommand=PaintBridge::Read(command);
@@ -73,7 +78,7 @@ void Lighting(void*) {
         if(resetEpoch!=WakeGate::Epoch())continue;
         if(!WakeGate::Awake()){vTaskDelay(pdMS_TO_TICKS(10));continue;}
         LightingState::Snapshot snapshot;
-        snapshot.mode=painting?4:(selectedEffect?3:(autoStarted?2:1));
+        snapshot.mode=lightsOff?0:painting?4:(selectedEffect?3:(autoStarted?2:1));
         for(unsigned i=0;i<10;++i)snapshot.settings[i]=effectSettings[i];
         snapshot.settings[2]=outputBrightness;snapshot.settings[6]=randomColor;
         if(!selectedEffect&&!painting){
@@ -84,8 +89,23 @@ void Lighting(void*) {
         snapshot.elapsed=static_cast<uint16_t>((millis()-(selectedEffect?effectStart:autoStart))/10);
         LightingState::Publish(snapshot);
         if(haveCommand) {
+            if(command.restartIfOff){
+                if(lightsOff){
+                    lightsOff=painting=selectedEffect=autoStarted=false;
+                    startup=StartupSequence::State{};
+                    outputBrightness=100;randomColor=true;
+                    testStrip.setBrightness(LedStripTest::Brightness);
+                    testStrip.clear();testStrip.show();
+                }
+                vTaskDelay(pdMS_TO_TICKS(10));continue;
+            }
             // An explicit user command takes priority and must receive its ACK promptly.
             startup.Finish();
+            if(command.off){
+                lightsOff=true;painting=selectedEffect=false;
+                testStrip.clear();testStrip.show();
+                vTaskDelay(pdMS_TO_TICKS(10));continue;
+            }
             if(command.brightnessOnly){
                 outputBrightness=command.settings[2];
                 testStrip.setBrightness(LedStripTest::Brightness*outputBrightness/100);
@@ -103,6 +123,7 @@ void Lighting(void*) {
                 if(!randomColor&&!selectedEffect)randomBase=shownColor;
                 continue;
             }
+            lightsOff=false;
             painting = !command.automatic&&!command.effect;
             if(command.effect) {
                 selectedEffect=true;effectStart=millis();
@@ -124,6 +145,7 @@ void Lighting(void*) {
             }
             if(!command.effect) PaintBridge::Applied(command);
         }
+        if(lightsOff){vTaskDelay(pdMS_TO_TICKS(10));continue;}
         if(startup.Active(true,millis())){
             startup.Draw(testStrip,millis());
             vTaskDelay(pdMS_TO_TICKS(SpatialEffects::FrameMs));continue;

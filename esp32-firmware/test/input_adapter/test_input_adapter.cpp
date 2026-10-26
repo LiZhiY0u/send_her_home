@@ -22,5 +22,6 @@ int main()
     assert(InputAdapters::MiniApp(2) == Action::Next);
     assert(InputAdapters::MiniApp(4) == Action::Next);
     assert(InputAdapters::MiniApp(5) == Action::Confirm);
+    assert(InputAdapters::MiniApp(6) == Action::ShowCreator);
     assert(InputAdapters::MiniApp(255) == Action::None);
 }

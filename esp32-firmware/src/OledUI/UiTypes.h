@@ -24,6 +24,7 @@ enum UI_PAGE
     M_LIGHT_EFFECT,
     M_MOTOR,
     M_MOTOR_SPEED,
+    M_CREATOR,
 };
 
 enum UI_STATE

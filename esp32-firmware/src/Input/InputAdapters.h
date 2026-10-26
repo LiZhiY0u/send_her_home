@@ -10,6 +10,7 @@ inline UserInput::Action Encoder(int16_t diff)
 }
 inline UserInput::Action MiniApp(uint8_t command)
 {
+    if(command==6)return UserInput::Action::ShowCreator;
     switch (RemoteKeyInput::Decode(command)) {
     case RemoteKeyInput::Action::Previous: return UserInput::Action::Previous;
     case RemoteKeyInput::Action::Next: return UserInput::Action::Next;

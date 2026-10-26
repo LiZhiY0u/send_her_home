@@ -4,6 +4,7 @@ void UiPages::Process(UI_PAGE page) {
     switch(page) {
     case M_WINDOW: OledUI::Window_Proc();break;
     case M_SLEEP: OledUI::Sleep_Proc();break;
+    case M_CREATOR: CreatorProcess();break;
     case M_MAIN: OledUI::Main_Proc();break;
     case M_EDITOR: OledUI::Editor_Proc();break;
     case M_KNOB: OledUI::Knob_Proc();break;

@@ -16,7 +16,7 @@ BaseType_t xTaskCreatePinnedToCore(TaskFunction_t fn, const char* name, uint32_t
     void* parameter, unsigned priority, TaskHandle_t* handle, int core)
 {
     const char* names[] = {"start_task", "Task_ws2812", "Task_key", "Task_oled"};
-    const uint32_t stacks[] = {4096,2048,2048,10240};
+    const uint32_t stacks[] = {4096,6144,2048,10240};
     assert(created < 4 && fn && !parameter && core == 1);
     assert(std::strcmp(name,names[created]) == 0 && stack == stacks[created]);
     assert(priority == (created == 0 ? 2u : 4u));

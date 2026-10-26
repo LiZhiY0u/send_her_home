@@ -111,6 +111,16 @@ void PaintBridge::CanSend() {
     if(phone!=0xffff&&subscribed&&lightingPending&&att_server_notify(phone,StatusHandle,lightingStatus,20)==0)lightingPending=false;
 }
 bool PaintBridge::Read(Command& command) {return commands&&xQueueReceive(commands,&command,0)==pdTRUE&&command.epoch==WakeGate::Epoch();}
+bool PaintBridge::StartFromHome(){
+    if(!commands)return false;
+    Command command{};command.restartIfOff=true;
+    return xQueueSend(commands,&command,0)==pdTRUE;
+}
+bool PaintBridge::TurnOff(){
+    if(!commands)return false;
+    Command command{};command.off=true;
+    return xQueueSend(commands,&command,0)==pdTRUE;
+}
 bool PaintBridge::SelectLocalEffect(uint8_t effect,bool automatic) {
     if(!commands||effect>=22)return false;
     Command command{};command.automatic=automatic;command.effect=!automatic;

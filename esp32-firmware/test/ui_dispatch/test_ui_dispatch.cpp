@@ -14,6 +14,7 @@ void Init(){} void SetContrast(uint8_t){}
 }
 namespace ConnectionToast { void Draw(){calls.push_back(103);} }
 namespace UiPages {
+void CreatorProcess(){calls.push_back(17);}
 void MotorProcess(){calls.push_back(15);}
 void MotorSpeedProcess(){calls.push_back(16);}
 }
@@ -32,7 +33,7 @@ PAGE(Light_Main_Proc,11) PAGE(Light_Bri_Proc,12) PAGE(Light_Color_Proc,13) PAGE(
 int main() {
     calls.clear();OledUI::Task();assert(calls==std::vector<int>{100});
     WakeGate::Wake();
-    for(int page=0;page<17;++page) {
+    for(int page=0;page<18;++page) {
         calls.clear();UiPages::Process(static_cast<UI_PAGE>(page));assert(calls==std::vector<int>{page});
         calls.clear();ui.state=S_NONE;ui.index=static_cast<uint8_t>(page);OledUI::Task();
         assert(calls==std::vector<int>({100,101,102,page,103}));

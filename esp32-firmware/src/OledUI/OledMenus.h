@@ -74,7 +74,7 @@ extern const uint8_t light_effect_menu_count;
 // Icon bitmap data (PROGMEM)
 // ===========================
 
-// Main menu icons - 4 icons, each 120 bytes (30x30 @ 1bpp)
+// Main menu icons, each 120 bytes (30x30 @ 1bpp), in main_menu order.
 extern const uint8_t main_icon_pic[][120];
 extern const uint8_t main_icon_count;
 

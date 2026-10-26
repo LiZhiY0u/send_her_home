@@ -6,6 +6,11 @@
 uint32_t test_now=123;
 SerialFake Serial;
 volatile Button_Context btn{};
+UI_Context ui{};
+namespace OledUI {
+void OpenRoot(UI_PAGE page){ui.index=page;ui.layer=0;}
+bool NavigateTo(UI_PAGE page){ui.index=page;return true;}
+}
 namespace { int16_t diff=0; std::deque<UserInput::Event> events; }
 namespace ENCODER { int16_t Encoder_GetDiff() { auto value=diff;diff=0;return value; } }
 namespace InputQueue {
@@ -23,6 +28,8 @@ int main() {
     OledUI::Key_Scan(); assert(events.size()==1 && btn.id==BTN_ID_SP);
     btn.pressed=false;OledUI::Key_Scan();assert(btn.pressed && events.empty());
     btn.pressed=false;OledUI::Key_Scan();assert(!btn.pressed);
+    events.push_back({UserInput::Action::ShowCreator,UserInput::Source::MiniApp,2});
+    OledUI::Key_Scan();assert(ui.index==M_CREATOR&&ui.select[0]==6&&!btn.pressed);
     Serial.bytes={'x','1','2'};
     OledUI::Key_Scan();
 #if ENABLE_SERIAL_INPUT_DEBUG

@@ -26,6 +26,11 @@ void OledUI::Key_Scan()
     // Keep a pending UI event intact during page transitions.
     UserInput::Event event;
     if (!btn.pressed && InputQueue::Read(event)) {
+        if(event.action==UserInput::Action::ShowCreator){
+            WakeGate::Wake();
+            OpenRoot(M_MAIN);ui.select[0]=6;NavigateTo(M_CREATOR);
+            return;
+        }
         if(WakeGate::Wake())return; // First navigation event wakes without entering a menu.
         const uint8_t id = UiInputAdapter::ButtonId(event.action);
         if (id != 255) {

@@ -68,10 +68,22 @@ int main() {
     OledUI::OpenRoot(M_MAIN);OledUI::OpenRoot(M_LIGHT_COLOR);
     assert(check_box.s==selection && *selection==3);
     OledUI::OpenRoot(M_MAIN);
-    assert(main_menu_count == 5 && main_icon_count == 5);
-    assert(main_icon_pic[1][0]==0xff); // Motor is directly after Light.
-    assert(main_icon_pic[1][32]==0xef); // Preserve the inverted motor outline.
-    ui.select[0]=1;btn.id=BTN_ID_SP;btn.pressed=true;
+    assert(main_menu_count == 7 && main_icon_count == 7);
+    ui.select[0]=6;btn.id=BTN_ID_SP;btn.pressed=true;
+    OledUI::Main_Proc();OledUI::Layer_Init_In();assert(ui.index==M_CREATOR);
+    ui.state=S_NONE;btn.id=BTN_ID_LP;btn.pressed=true;UiPages::CreatorProcess();
+    OledUI::Layer_Init_Out();assert(ui.index==M_MAIN);
+    OledUI::OpenRoot(M_MAIN);
+    assert(main_icon_pic[2][0]==0xff); // Motor is directly after Light.
+    assert(main_icon_pic[2][32]==0xef); // Preserve the inverted motor outline.
+    ui.select[0]=0;btn.id=BTN_ID_SP;btn.pressed=true;
+    const auto offCalls=PaintBridge::OffCalls();
+    OledUI::Main_Proc();assert(ui.index==M_MAIN&&PaintBridge::OffCalls()==offCalls+1);
+    ui.select[0]=1;btn.pressed=true;
+    const auto starts=PaintBridge::StartCalls();
+    OledUI::Main_Proc();assert(PaintBridge::StartCalls()==starts+1);
+    OledUI::OpenRoot(M_MAIN);
+    ui.select[0]=2;btn.pressed=true;
     OledUI::Main_Proc();OledUI::Layer_Init_In();assert(ui.index==M_MOTOR);
     ui.state = S_NONE; ui.init = true;
     ui.select[ui.layer] = 1; btn.id = BTN_ID_SP; btn.pressed = true;

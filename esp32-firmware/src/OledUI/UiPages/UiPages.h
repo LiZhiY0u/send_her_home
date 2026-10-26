@@ -3,6 +3,7 @@
 namespace UiPages {
 void InitPage(UI_PAGE page);
 void Process(UI_PAGE page);
+void CreatorProcess();
 void RotateTile();
 void RotateList();
 void MotorInit();
